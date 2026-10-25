@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#071018">
+  <meta name="description" content="Explore Willow's 105-qubit layout, build Dicke states, and see why Team Popeyes chose different circuits for different cases.">
+  <title>Willow Dicke Lab · Team Popeyes</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./styles.css">
+  <script src="./app.js" defer></script>
+</head>
+<body>
+  <div class="grain" aria-hidden="true"></div>
+  <header class="site-header">
+    <a class="brand" href="#top" aria-label="Willow Dicke Lab home"><span class="brand-mark" aria-hidden="true">✳</span><span>WILLOW<span class="brand-light">/</span>DICKE<span class="brand-light">LAB</span></span></a>
+    <nav aria-label="Main navigation">
+      <a href="#state">The state</a><a href="#routing">Route lab</a><a href="#decisions">Our choices</a><a href="#evidence">Evidence</a>
+    </nav>
+    <a class="header-cta" href="#routing">Try the lab <span aria-hidden="true">↗</span></a>
+  </header>
+
+  <main id="top">
+    <section class="hero wrap" aria-labelledby="hero-title">
+      <div class="hero-copy">
+        <p class="eyebrow"><span class="live-dot"></span> An interactive field guide · Team Popeyes</p>
+        <h1 id="hero-title">A perfect state on an <em>imperfect</em> chip.</h1>
+        <p class="hero-lead">Meet Google's 105-qubit Willow layout. Make a Dicke state, route around a weak qubit, and discover why the shortest circuit is not always the best circuit.</p>
+        <div class="hero-actions"><a class="button button-primary" href="#state">Start exploring <span aria-hidden="true">↓</span></a><a class="button button-ghost" href="#routing">Jump to the chip <span aria-hidden="true">↗</span></a></div>
+        <p class="hero-note">Interactive demos are educational. Error rates in the routing lab are illustrative, not live Willow calibration.</p>
+      </div>
+      <div class="hero-art" aria-hidden="true">
+        <div class="hero-orbit orbit-one"></div><div class="hero-orbit orbit-two"></div>
+        <div class="hero-mesh" id="hero-mesh"></div>
+        <div class="hero-badge badge-a"><span class="badge-icon">✦</span> exact state</div>
+        <div class="hero-badge badge-b"><span class="badge-icon">↝</span> noisy route?</div>
+        <div class="hero-badge badge-c"><span class="badge-icon">◎</span> 105 qubits</div>
+      </div>
+      <div class="hero-bottom"><span>DUQUANTUM × GOOGLE QUANTUM AI CHALLENGE</span><span>SCROLL TO EXPLORE <b aria-hidden="true">↓</b></span></div>
+    </section>
+
+    <section class="mission-section section-pad" id="state" aria-labelledby="state-title">
+      <div class="wrap two-col intro-grid">
+        <div><p class="section-kicker">01 / THE MISSION</p><h2 id="state-title">Share the excitement <span class="accent-lime">equally.</span></h2></div>
+        <div class="section-intro"><p>A Dicke state spreads exactly <strong>n excitations</strong> across <strong>N qubits</strong>. Every bitstring with n ones gets the same amplitude. Every other bitstring gets zero.</p><p>For four qubits and two excitations, there are six equally likely answers. The quantum trick is making all six coexist <em>coherently</em>.</p></div>
+      </div>
+      <div class="wrap state-lab card-surface">
+        <div class="lab-topline"><span class="mini-label">PLAYGROUND A</span><span class="lab-status"><span class="live-dot"></span> EXACT TARGET STATE</span></div>
+        <div class="state-grid">
+          <div class="state-controls">
+            <h3>Build your own Dicke state</h3>
+            <p>Change the number of qubits and excitations. Then take a sample measurement.</p>
+            <label class="range-label" for="n-qubits">Qubits <strong id="n-value">4</strong></label>
+            <input id="n-qubits" type="range" min="2" max="8" value="4">
+            <label class="range-label" for="n-excitations">Excitations <strong id="k-value">2</strong></label>
+            <input id="n-excitations" type="range" min="0" max="4" value="2">
+            <button class="button button-primary measure-button" id="measure-button" type="button">Measure a state <span aria-hidden="true">✦</span></button>
+            <div class="sample-result" aria-live="polite">Press measure to draw one valid bitstring.</div>
+          </div>
+          <div class="state-display">
+            <div class="state-equation" id="state-equation">|D⁴₂⟩ = (|0011⟩ + |0101⟩ + ···) / √6</div>
+            <div class="state-stats"><div><small>VALID STRINGS</small><strong id="valid-count">6</strong></div><div><small>CHANCE EACH</small><strong id="each-prob">16.7%</strong></div><div><small>AMPLITUDE</small><strong id="amplitude">1/√6</strong></div></div>
+            <div class="bitstring-heading"><span>The equal-weight outcomes</span><span id="bitstring-count-label">6 states</span></div>
+            <div class="bitstring-grid" id="bitstring-grid" aria-live="polite"></div>
+            <p class="micro-copy" id="bitstring-note">Lit dots are 1s. Each valid row has exactly two.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="route-section section-pad" id="routing" aria-labelledby="route-title">
+      <div class="wrap"><p class="section-kicker">02 / THE HARDWARE</p><div class="route-heading"><div><h2 id="route-title">Find a way through <span class="accent-coral">Willow.</span></h2><p>This is the real 105-qubit, 182-coupler <code>willow_pink</code> topology. Tap two qubits, mark one unavailable, and compare the fewest-hop route with a route that avoids noisy links.</p></div><div class="chip-count"><strong>105</strong><span>QUBITS<br>ON THIS MAP</span></div></div></div>
+      <div class="wrap route-lab card-surface">
+        <div class="lab-topline"><span class="mini-label">PLAYGROUND B</span><span class="lab-status">TOPOLOGY: REAL <span class="separator">/</span> ERRORS: ILLUSTRATIVE</span></div>
+        <div class="route-layout">
+          <div class="map-column">
+            <div class="map-toolbar" role="group" aria-label="Map click mode">
+              <button class="map-mode active" type="button" data-mode="start">1 · Start</button>
+              <button class="map-mode" type="button" data-mode="end">2 · Target</button>
+              <button class="map-mode" type="button" data-mode="block">3 · Block / unblock</button>
+            </div>
+            <div class="map-wrap"><svg id="topology-map" viewBox="0 0 800 690" role="img" aria-label="Interactive Willow qubit connection graph"></svg><div id="map-loading">Loading topology…</div></div>
+            <div class="map-legend"><span><i class="dot start-dot"></i> start</span><span><i class="dot end-dot"></i> target</span><span><i class="line hops-line"></i> fewest hops</span><span><i class="line weighted-line"></i> noise aware</span><span><i class="dot weak-dot"></i> weak qubit</span><span><i class="dot blocked-dot"></i> unavailable</span></div>
+          </div>
+          <div class="route-controls">
+            <h3>Which path would you take?</h3>
+            <p class="control-help">Try the weak qubit at <code>(6, 7)</code>. It sits on the direct path. The illustrative risk slider changes how costly its links are.</p>
+            <div class="endpoint-fields"><label>From<select id="start-select" aria-label="Start qubit"></select></label><label>To<select id="end-select" aria-label="Target qubit"></select></label></div>
+            <label class="range-label" for="weak-error">Weak-link CZ error <strong id="weak-error-label">7.0%</strong></label>
+            <input id="weak-error" type="range" min="1" max="12" value="7" step="0.5">
+            <label class="checkbox-row"><input id="block-weak" type="checkbox"><span>Mark <code>(6, 7)</code> unavailable</span></label>
+            <div class="route-comparison"><div class="route-result hops"><span>FEWEST HOPS</span><strong id="hops-count">—</strong><small id="hops-risk">—</small></div><div class="route-result weighted"><span>NOISE AWARE</span><strong id="weighted-count">—</strong><small id="weighted-risk">—</small></div></div>
+            <p id="route-explanation" class="route-explanation" aria-live="polite">Choose two qubits to compare routes.</p>
+            <p class="micro-copy route-caveat">Toy cost: independent CZ failures, approximately three CZs per SWAP. It omits idle decoherence, readout, parallel scheduling, and the exact gate compilation. This is a teaching demo, not the submission router.</p>
+          </div>
+        </div>
+      </div>
+      <div class="wrap callout"><div class="callout-icon">↝</div><p><strong>Why not simply choose the shortest path?</strong> A SWAP typically costs several entangling gates. One bad coupler can erase the gain from a shorter route. Our actual submission weighs calibrated gate error, readout error, idle time, and expected score when choosing a placement.</p></div>
+    </section>
+
+    <section class="coherence-section section-pad" id="checks" aria-labelledby="checks-title">
+      <div class="wrap two-col intro-grid"><div><p class="section-kicker">03 / THE TWO CHECKS</p><h2 id="checks-title">The same answers can hide a <span class="accent-violet">different state.</span></h2></div><div class="section-intro"><p>The challenge checks measurements in both Z and X bases. Z asks whether the excitation count and probabilities look right. X probes the phases that make it a coherent quantum superposition.</p></div></div>
+      <div class="wrap coherence-card card-surface"><div class="coherence-controls"><div><span class="mini-label">THE PHASE FLIP EXPERIMENT</span><h3>Same probabilities. Different interference.</h3><p>For two qubits, flip the relative phase between <code>|01⟩</code> and <code>|10⟩</code>. Watch what changes.</p></div><div class="phase-switch" role="group" aria-label="Relative phase"><button class="phase-option active" data-phase="plus" type="button">+ phase</button><button class="phase-option" data-phase="minus" type="button">− phase</button></div></div><div class="coherence-views"><div class="basis-card"><div class="basis-title"><span>01 / Z BASIS</span><strong>Population</strong></div><div class="bar-row"><span>01</span><div class="bar-track"><i style="width:50%"></i></div><b>50%</b></div><div class="bar-row"><span>10</span><div class="bar-track"><i style="width:50%"></i></div><b>50%</b></div><p id="z-observation">The Z outcomes stay 50/50 in both cases.</p></div><div class="basis-card x-basis"><div class="basis-title"><span>02 / X BASIS</span><strong>Coherence</strong></div><div class="interference"><span>⟨X⊗X⟩</span><strong id="xx-value">+1</strong></div><div class="interference-meter"><div id="interference-indicator"></div></div><p id="x-observation">The + state has the target correlation.</p></div></div></div>
+    </section>
+
+    <section class="decision-section section-pad" id="decisions" aria-labelledby="decision-title"><div class="wrap"><p class="section-kicker">04 / THE SOLUTION</p><div class="decision-intro"><div><h2 id="decision-title">One target. <span class="accent-lime">Several recipes.</span></h2><p>Our code chooses a construction from the case and then places it on usable qubits. Change N and n to see the rule used by the team's circuit builder.</p></div><div class="decision-controls"><label>Qubits N <strong id="decision-n-label">6</strong><input id="decision-n" type="range" min="2" max="20" value="6"></label><label>Excitations n <strong id="decision-k-label">3</strong><input id="decision-k" type="range" min="0" max="6" value="3"></label></div></div><div class="decision-grid"><div class="selected-strategy card-surface"><span class="mini-label">FOR <span id="decision-case">D⁶₃</span></span><div class="strategy-symbol" id="strategy-symbol">✶</div><h3 id="strategy-name">Exact small-state synthesis</h3><p id="strategy-description">Use an exact, precomputed Ry + CZ circuit and place its shape on good physical qubits.</p><div class="strategy-meta"><span id="strategy-detail">k = min(n, N−n) = 3</span><span id="strategy-reason">Why: dense small states can be cheaper than a routed generic circuit</span></div></div><div class="strategy-menu" id="strategy-menu"><div data-strategy="product"><span>00</span><div><b>Product state</b><small>No entanglement needed</small></div></div><div data-strategy="tree"><span>01</span><div><b>Broadcast tree</b><small>Spread one excitation</small></div></div><div data-strategy="synth"><span>02</span><div><b>Exact synthesis</b><small>Small dense states</small></div></div><div data-strategy="portfolio"><span>03</span><div><b>Optimized portfolio</b><small>Measured crossover cases</small></div></div><div data-strategy="scs"><span>04</span><div><b>Path-based SCS</b><small>Compact fallback</small></div></div><div data-strategy="routed"><span>05</span><div><b>Routed B–E</b><small>General fallback</small></div></div></div></div><p class="method-note">For n &gt; N/2, the code builds the complementary state and flips all qubits. Because Dicke states are permutation symmetric, routing swaps do not need to be undone.</p></div></section>
+
+    <section class="evidence-section section-pad" id="evidence" aria-labelledby="evidence-title"><div class="wrap"><p class="section-kicker">05 / WHY THESE CHOICES</p><h2 id="evidence-title">Count the gates. <span class="accent-coral">Then count the errors.</span></h2><p class="evidence-lead">Three concrete examples from the team's research. All performance figures below come from simulation or exact circuit counts; no hardware score is claimed.</p><div class="evidence-grid"><article class="evidence-card"><span class="evidence-index">A / PARALLELISM</span><h3>A tree beats a chain on time.</h3><p>For W₁₀, both spread one excitation. The tree lets separate branches work at once.</p><div class="evidence-number"><span>37</span><i>→</i><strong>15</strong><small>moments, chain → tree</small></div><p class="evidence-foot">In the team's idle-noise model, the X error term fell from 0.0075 to 0.0042.</p></article><article class="evidence-card"><span class="evidence-index">B / SYNTHESIS</span><h3>Learn exact angles offline.</h3><p>For D⁶₃, an exact small-state circuit uses far fewer entangling gates than a routed baseline.</p><div class="evidence-number"><span>80</span><i>→</i><strong>15</strong><small>CZ gates, routed baseline → synthesis</small></div><p class="evidence-foot">The angles are precomputed; the calibration chooses the placement at build time.</p></article><article class="evidence-card"><span class="evidence-index">C / PORTFOLIO</span><h3>Let a better recipe win.</h3><p>For D¹⁰₅, the selected two-arm construction beat an earlier circuit under the same evaluation harness.</p><div class="evidence-number"><span>185</span><i>→</i><strong>85</strong><small>CZ gates, earlier → selected</small></div><p class="evidence-foot">The submission uses a measured crossover rule, with fallbacks if a candidate fails.</p></article></div><div class="score-panel"><div><span class="mini-label">SIMULATED PORTFOLIO COMPARISON</span><h3>Better across the tested cases.</h3><p>Expected score summed over 25 cases through N = 10, using three synthetic calibrations and the team's noise model.</p></div><div class="score-bars"><div class="score-bar-row"><span>Preliminary combined</span><div><i style="width:88%"></i></div><b>90.77</b></div><div class="score-bar-row current"><span>Current team circuit</span><div><i style="width:100%"></i></div><b>102.88</b></div><small>These are model estimates, not a Willow hardware result.</small></div></div></div></section>
+
+    <section class="closing-section section-pad"><div class="wrap closing-grid"><div><p class="section-kicker">TAKE IT FURTHER</p><h2>Now you can see <em>the tradeoff.</em></h2><p>Willow is a graph of possible interactions. Dicke states demand equal amplitudes and intact coherence. Good circuit design joins topology, exact math, noise, and measured evidence.</p><a href="#routing" class="button button-primary">Try another route <span aria-hidden="true">↗</span></a></div><div class="resources"><h3>Keep exploring</h3><a href="#state"><span>↗</span><span>Build a Dicke state<small>see how equal amplitudes become outcomes</small></span></a><a href="#checks"><span>↗</span><span>Flip the phase<small>discover what the X-basis check reveals</small></span></a><a href="https://quantumai.google/cirq/google/devices" target="_blank" rel="noopener"><span>↗</span><span>Google's device guide<small>read about the Willow layout</small></span></a></div></div></section>
+  </main>
+  <footer><div class="wrap footer-grid"><a class="brand" href="#top"><span class="brand-mark" aria-hidden="true">✳</span><span>WILLOW<span class="brand-light">/</span>DICKE<span class="brand-light">LAB</span></span></a><p>Made to explain Team Popeyes' DuQuantum × Google Quantum AI challenge work. Routing risk values are illustrative; reported results are simulated.</p><a href="#top">Back to top ↑</a></div></footer>
+</body>
+</html>
