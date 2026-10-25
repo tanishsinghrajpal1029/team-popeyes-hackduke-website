@@ -97,3 +97,8 @@
 .uno-key-route{background:#b9e875}.uno-key-node{background:#465c5b}.uno-key-marker{background:#f6f2d9}
 @media(max-width:850px){.route-method,.uno-panel{grid-template-columns:1fr;gap:18px}.uno-display{justify-self:start}}
 @media(max-width:600px){.route-method,.uno-panel{padding:21px}.uno-matrix{padding:8px;gap:3px}.uno-switch{gap:6px}.uno-mode{font-size:10px;padding:8px 10px}}
+.method-note a,.decision-intro p a,.evidence-foot a,.validation-caveat a{color:var(--lime);text-decoration:underline;text-underline-offset:3px}
+.score-panel .validation-caveat a{color:#225037}
+.bonus-depth-row{grid-template-columns:132px 1fr 40px}
+.evidence-number strong{overflow-wrap:anywhere}
+@media(max-width:600px){.bonus-depth-row{grid-template-columns:100px 1fr 30px}}

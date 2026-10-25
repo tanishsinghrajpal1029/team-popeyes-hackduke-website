@@ -1,50 +1,42 @@
 # Willow Dicke Lab
 
-An interactive Team Popeyes explainer for the Google Quantum AI challenge at DuQuantum, the Duke Quantum Hackathon. It introduces Dicke states, shows the `willow_pink` connectivity graph, compares two routing rules, explains the `DuQuantum_submission_FINAL_v2.ipynb` circuit selector, and previews our Arduino UNO Q exhibit. The [What we built](./methodology.html) page is a fuller account of the math, decisions, local evidence, and limitations.
+A beginner-friendly, interactive explanation of Team Popeyes' Google Quantum AI challenge work at DuQuantum. The site shows the supplied 105-qubit Willow topology, a toy routing comparison, a Dicke-state playground, the current circuit choice rule, local bonus depths, and an Arduino UNO Q LED-matrix preview.
 
-## See the site
+## Which implementation does this site explain?
 
-The repository is a buildless static site: `index.html`, `app.js`, `styles.css`, and local JSON assets. GitHub Pages can serve it from the `main` branch root. If Pages and the domain are configured, its intended public address is [tanishsinghrajpal.com/team-popeyes-hackduke-website/](https://tanishsinghrajpal.com/team-popeyes-hackduke-website/).
+The **current** methodology and code guide follow the attached `Team-Popeyes-DuHack-GoogleQAI-main-3` folder:
 
-For a local preview, run from this directory:
+- `main.py` is the source of the circuit builders.
+- `submission.ipynb` embeds that implementation and is named as the entry in the folder's README.
+- `ARCHITECTURE.md` explains algorithms, assumptions, and local comparisons.
+- `experiments/results/notebook_bonus.csv` contains the 56 checked bonus depths used here.
 
-```bash
-python3 -m http.server 8000
-```
+That `submission.ipynb` has SHA-256 `c7f79caa7cd3ca83f35c42b8cbbc90969e97e1ce6137cc689dd18cade65fb970`. It differs from `DuQuantum_submission_FINAL_v2.ipynb`, which the website previously described. The earlier notebook remains in `downloads/` only as a historical snapshot; it is **not** the source of the current selector. The interactive bonus chart compares its selected depth with the current folder's checked depth, and labels each version.
 
-Open `http://127.0.0.1:8000/` for the interactive lab or `http://127.0.0.1:8000/methodology.html` for the field notes. Serve it over HTTP so the page can load `topology.json` and `bonus-depths.json`; opening `index.html` directly as a file may block those requests.
+## Read the site
 
-## How the alternative path is found
+- [Home](./index.html): change a target, compare toy paths, use the circuit selector, and inspect bonus depths.
+- [How we built it](./methodology.html): background terms, the state, hardware constraints, algorithms, choices, tests, bonus, and Arduino exhibit in plain English.
+- [Inside the code](./implementation.html): one worked example, readable pseudocode, why each algorithm was chosen, and a file map.
 
-The route lab treats the 105 qubits as graph vertices and the 182 couplers as edges. Its topology comes from the local Cirq `willow_pink` device template. You choose start and target coordinates and may mark qubits unavailable; an unavailable qubit is excluded from both searches. The displayed paths list every coordinate in travel order.
+## What the current Python does
 
-1. **Fewest hops:** Dijkstra's algorithm gives every usable edge cost 1 and minimizes the number of couplers traversed.
-2. **Noise aware:** Each edge has an illustrative CZ error probability `p`. A move before the final interaction is modeled as a SWAP of approximately three CZ gates, so its cost is `−3 ln(1−p)`. The last edge costs `−ln(1−p)` for one CZ. Dijkstra minimizes the sum of these costs.
-3. **Comparison:** The displayed *gate survival* is `∏(1−p)^m`, with `m = 3` for preterminal edges and `m = 1` for the final edge. Minimizing the summed negative log costs maximizes this product. A path with more hops can win if it avoids a weak coupler. Blocking a qubit forces both rules to find a route around it, if one exists.
+The main function is `create_dicke_state(N, n, calibration...)`. It works with `k = min(n, N-n)`; for targets with more than half the qubits excited, it prepares the complement and flips all qubits. Product states need no CZ. A single excitation uses a branching W tree. The calibrated portfolio is tried when `k == 2 and N >= 6` or `k >= 3 and N >= 9`; if it fails, the core builder tries saved small-state exact templates, path blocks, and routed constructions. The returned circuit is compiled into CZ and PhasedXZ gates, runs of one-qubit gates are merged, and only sufficiently long idle windows receive XY4 echo pulses.
 
-The ordinary coupler errors are deterministic synthetic values, and the weak-link slider overrides edges touching `(6, 7)`. **They are not Willow calibration data.** The model omits idle decoherence, readout, crosstalk, parallel scheduling, and actual gate compilation. It is a classical Dijkstra teaching demo, not AI, a hardware fidelity prediction, or the submission's circuit router.
+The bonus function `create_dicke_state_adaptive` gathers several exact circuit families and returns the one with the fewest moments. It uses no mid-circuit measurement in the current version. The folder's local `score_solution()` sum is 44.47 over 56 eligible pairs; that is a comparison metric, while the organizer's stated bonus rule awards a point to the shallowest submission for each pair.
 
-## UNO Q preview and physical board
+## What the browser demo represents
 
-The public site includes a browser recreation of the Arduino UNO Q's built-in 8 × 13 LED matrix. It shows Willow rows 3–10 and columns 1–13, a central 104-pixel window of the full graph. Choose **Noise-aware** or **Fewest hops** to preview either route; map controls above update the lights. Choose **Bonus depths** to show candidate A in the upper two rows and candidate B in the lower two rows; the shorter depth bar is brighter. The Dicke-state sliders in **Our choices** set the bonus pair. Routes outside the window remain visible in full on the graph and in the coordinate lists.
+The topology coordinates and edges come from the supplied `willow_pink` map. The displayed edge errors are **synthetic teaching values**, not live Willow calibration. The fewest-hop path and the error-aware path use classical Dijkstra with different edge costs. This route game is separate from the submission's placement, beam search, and circuit portfolio.
 
-The physical UNO Q app is in the [team repository](https://github.com/tanishsinghrajpal1029/Team-Popeyes-DuHack-GoogleQAI/tree/main/arduino-uno-q-willow). Its local controls appear at `http://127.0.0.1:7000/` when the board is connected and its app is running. That address is **local to the connected computer**. A public GitHub Pages site cannot turn it into a live board feed; each visitor's `127.0.0.1` refers to their own device. The site preview runs entirely in the visitor's browser and needs no board.
+The browser's UNO Q bonus bars compare earlier and current depths. The attached folder's physical UNO Q companion app still has its older two-candidate bonus display; the website labels that difference. Neither browser nor UNO Q performs quantum operations.
 
-## Circuit methodology shown on the site
+## Evidence and limits
 
-The site now follows the main-task selector in [`FINAL_v2`](./downloads/DuQuantum_submission_FINAL_v2.ipynb). Product states and `N ≤ 3` use the hub-walk family. Five shapes, `(7,3)`, `(7,4)`, `(8,3)`, `(8,4)`, and `(8,5)`, try a PSC template, then the synthesized builder, then hub-walk. Other entangled `4 ≤ N ≤ 8` cases try the synthesized builder, then hub-walk. Entangled `N ≥ 9` cases try the calibration-aware two-row construction, then hub-walk. Returned circuits are checked for native gates, working qubits and couplers, and the 1,750-moment limit.
+The attached folder reports 419 automated tests, a 969-build robustness sweep, and local noise simulations. The organizer's preliminary three-case hardware email tested an earlier notebook, **not** this attached `submission.ipynb`. This site does not assign that hardware score to the current implementation. Local simulations assume parameters that may differ from Willow hardware and omit some effects such as drift, crosstalk, and leakage.
 
-The earlier main configuration that uses the same circuits for the organizer's three reported `N ≥ 9` cases scored `1.3316 ± 0.0148` in a preliminary hardware rerun, leading the reported main-track ranking. `FINAL_v2` itself was not directly scored in that rerun. Small-state PSC choices were based on local work, and final results can change with calibration and hidden choices.
+This independent Team Popeyes explainer cites [Google Quantum AI](https://quantumai.google/), [DuQuantum](https://duquantum.org/), and [Major League Hacking](https://mlh.io/). No AI prompt logs are included in the website.
 
-For each of the 56 graded bonus pairs, `FINAL_v2` uses the same bonus implementation as the earlier combined notebook: it builds both exact candidates and returns the valid circuit with fewer moments. `bonus-depths.json` contains those checked depths. The displayed sum of `Nn/depth` is a comparison metric, **not** the official bonus award. The main-task `228/228` rule sweep used fresh synthetic calibration, not measured Willow performance.
+## Preview locally
 
-## Data and credits
-
-- `topology.json`: 105-qubit, 182-coupler `willow_pink` connectivity.
-- `bonus-depths.json`: checked exact-circuit depths for bonus pairs.
-- `downloads/DuQuantum_submission_FINAL_v2.ipynb`: byte-identical copy of the notebook described on the site (SHA-256 `993ec3e95606a8d9a1ec0ebf3fda1ec9f32a066007ef630adc47be3ec20d6727`).
-- `app.js`: Dicke-state, routing, selector, and UNO Q preview interactions.
-- `methodology.html`, `methodology.css`, and `methodology.js`: the research narrative, equations, and a small Dicke-state math explorer.
-- `assets/`: event and organization logos credited on the site.
-
-This is an independent Team Popeyes explainer. [DuQuantum](https://duquantum.org/), [Google Quantum AI](https://quantumai.google/), and [Major League Hacking](https://mlh.io/) are linked and credited on the page. Google Fonts are optional; system fonts are used if they do not load.
+From this directory, run `python3 -m http.server 8001` and open `http://127.0.0.1:8001/`. The pages are static HTML/CSS/JavaScript and need no build step.

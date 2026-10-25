@@ -89,3 +89,19 @@
 @media(max-width:1100px){.story-hero-grid{grid-template-columns:1fr;gap:30px;min-height:0}.story-hero-card{max-width:600px}.story-layout{grid-template-columns:170px minmax(0,1fr);gap:35px}.story-validation{grid-template-columns:1fr}}
 @media(max-width:760px){.story-layout{display:block;padding-top:44px}.story-toc{position:static;display:flex;flex-direction:row;overflow-x:auto;border-left:0;border-bottom:1px solid #395a59;padding:0 0 14px;margin-bottom:48px;white-space:nowrap;gap:18px}.story-toc>span{display:none}.story-toc a{flex:0 0 auto}.story-section{margin-bottom:64px;padding-bottom:62px}.story-facts,.story-mini-grid{grid-template-columns:1fr}.story-playground{grid-template-columns:1fr}.story-hero-grid{padding-top:85px;padding-bottom:70px}.story-route-example>div{grid-template-columns:95px 1fr 60px}.story-route-example>div strong,.story-route-example>div b{font-size:16px}.story-route-example>div span{font-size:11px}}
 @media(max-width:500px){.story-hero h1{font-size:52px}.story-hero-card{padding:19px}.story-hero-card strong{font-size:25px}.story-section h2{font-size:35px}.story-section>p{font-size:14px}.story-equation{padding:20px}.story-equation>div{font-size:18px}.story-steps>div{grid-template-columns:38px 1fr;padding:16px}.story-route-example{padding:18px}.story-route-example>div{grid-template-columns:1fr auto;gap:6px}.story-route-example>div span{grid-column:1/-1;grid-row:2}.story-route-example>div b{grid-column:2;grid-row:1}}
+.story-inline-link,.story-section>p>a,.method-note a,.evidence-foot a,.validation-caveat a{color:var(--lime);text-decoration:underline;text-underline-offset:4px}
+.story-code{margin:30px 0;background:#0d2630;border:1px solid #466667;border-radius:17px;padding:27px;overflow-x:auto}
+.story-code .eq-label{display:block;color:var(--lime);font:10px var(--mono);letter-spacing:.1em;margin-bottom:17px}
+.story-code pre{margin:0;white-space:pre-wrap;color:#e6f4e7;font:13px/1.85 var(--mono)}
+.story-code code{color:inherit;font-size:inherit}
+.story-hero-card strong{font-size:clamp(23px,2.2vw,32px)}
+.story-hero-card span:not(.mini-label){font-size:14px}
+.story-section strong{color:#e8f4e5}
+.story-section .story-facts strong,.story-section .story-mini-grid strong{color:var(--lime)}
+.story-section .story-validation span{line-height:1.45}
+@media(max-width:500px){.story-code{padding:18px}.story-code pre{font-size:11px}}
+/* Beginner pages: keep explanatory copy comfortable on phones. */
+.story-facts p,.story-steps p,.story-validation p,.story-research-note p{font-size:14px;line-height:1.7}
+.story-hero-card p{font-size:12px}
+.story-section .story-side-note{font-size:12px}
+@media(max-width:500px){.story-section>p{font-size:16px}.story-facts p,.story-steps p,.story-validation p{font-size:14px}}

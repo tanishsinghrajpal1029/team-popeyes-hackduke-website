@@ -78,22 +78,22 @@ function renderDecision() {
   slider.max = N;
   if (+slider.value > N) slider.value = N;
   const n = +slider.value, k = Math.min(n, N - n);
-  const pscCase = (N === 7 && k === 3) || (N === 8 && (k === 3 || k === 4));
   $('#decision-n-label').textContent = N;
   $('#decision-k-label').textContent = n;
   $('#decision-case').textContent = `D${toSuper(N)}${toSub(n)}`;
   let name, description, icon, reason, strategy;
   if (k === 0) {
-    [name, description, icon, reason, strategy] = ['Product state', 'The main builder prepares all zeros or all ones on calibrated qubits, without CZ gates.', '○', 'Builder: hub-walk family', 'small'];
-  } else if (N <= 3) {
-    [name, description, icon, reason, strategy] = ['Small-state builder', 'The hub-walk family handles these small exact Dicke states directly.', '✳', 'Builder: hub-walk family', 'small'];
-  } else if (pscCase) {
-    [name, description, icon, reason, strategy] = ['PSC exact template', 'An offline-synthesized template is placed on usable couplers. If it fails, the selector tries the synthesized construction and then hub-walk.', '✦', 'Order: PSC → synthesized → hub-walk', 'psc'];
+    [name, description, icon, reason, strategy] = ['All zeros or all ones', 'This target needs no entangling gate. Pick calibrated qubits, and flip them all only if the target is all ones.', '○', 'No CZ gates needed', 'small'];
+  } else if (k === 1) {
+    [name, description, icon, reason, strategy] = ['Branching W-state tree', 'Start with one excitation. In each round, several branches can pass part of it to fresh neighboring qubits at the same time.', '♧', N === 2 ? 'Special case: compare placements directly' : 'Parallel branches shorten waiting time', 'tree'];
+  } else if ((k === 2 && N >= 6) || (k >= 3 && N >= 9)) {
+    [name, description, icon, reason, strategy] = ['Calibrated portfolio branch', 'Compare connected paths and a two-arm split placed on the working grid. Estimate their error and keep a promising valid circuit.', '▤', 'If this builder fails, use the core construction', 'portfolio'];
   } else if (N <= 8) {
-    [name, description, icon, reason, strategy] = ['Synthesized construction', 'An exact small-state construction is tried first, with hub-walk as the validity fallback.', '◇', 'Order: synthesized → hub-walk', 'synth'];
+    [name, description, icon, reason, strategy] = ['Exact small-state template', 'An exact circuit was found offline. At run time, place its gate pattern on working, lower-error qubits.', '◇', 'If no placement fits, try the path-based fallback', 'synth'];
   } else {
-    [name, description, icon, reason, strategy] = ['Two-row construction', 'A calibration-aware two-row circuit is tried first. The hub-walk builder is the validity fallback.', '▤', 'Order: two-row → hub-walk', 'two-row'];
+    [name, description, icon, reason, strategy] = ['Path-based fallback', 'Build the Dicke state one controlled share at a time along a connected path, then compile to Willow-compatible gates.', '↝', 'Used when the preferred construction is unavailable', 'fallback'];
   }
+  if (n > N / 2) description += ' The code then flips every selected qubit to reach the requested number of 1s.';
   $('#strategy-name').textContent = name;
   $('#strategy-description').textContent = description;
   $('#strategy-symbol').textContent = icon;
@@ -113,18 +113,18 @@ function renderBonusDepth(N, n) {
     renderUnoMatrix();
     return;
   }
-  $('#bonus-eligibility').textContent = `D${toSuper(N)}${toSub(n)}: both circuits passed the exact-state check.`;
-  const max = Math.max(row.candidate_a, row.candidate_b);
-  $('#bonus-a-depth').textContent = row.candidate_a;
-  $('#bonus-b-depth').textContent = row.candidate_b;
-  $('#bonus-selected-depth').textContent = row.selected;
-  $('#bonus-a-bar').style.width = `${100 * row.candidate_a / max}%`;
-  $('#bonus-b-bar').style.width = `${100 * row.candidate_b / max}%`;
-  $('#bonus-a-bar').classList.toggle('chosen', row.candidate_a === row.selected);
-  $('#bonus-b-bar').classList.toggle('chosen', row.candidate_b === row.selected);
+  $('#bonus-eligibility').textContent = `D${toSuper(N)}${toSub(n)}: earlier site snapshot versus the current folder's checked circuit.`;
+  const max = Math.max(row.previous_depth, row.current_depth);
+  $('#bonus-a-depth').textContent = row.previous_depth;
+  $('#bonus-b-depth').textContent = row.current_depth;
+  $('#bonus-selected-depth').textContent = row.current_depth;
+  $('#bonus-a-bar').style.width = `${100 * row.previous_depth / max}%`;
+  $('#bonus-b-bar').style.width = `${100 * row.current_depth / max}%`;
+  $('#bonus-a-bar').classList.toggle('chosen', row.previous_depth < row.current_depth);
+  $('#bonus-b-bar').classList.toggle('chosen', row.current_depth <= row.previous_depth);
   renderUnoMatrix();
 }
-fetch('./bonus-depths.json').then(response => {
+fetch('./bonus-depths-current.json').then(response => {
   if (!response.ok) throw new Error(`HTTP ${response.status}`);
   return response.json();
 }).then(data => {
@@ -199,8 +199,8 @@ function renderUnoMatrix() {
   const route = latestRoutes[unoMode] || [];
   const routeNodes = new Set(route);
   const available = new Set(topology.qubits.map(nodeId));
-  const maxDepth = row ? Math.max(row.candidate_a, row.candidate_b) : 1;
-  const lengths = row ? [Math.ceil(13 * row.candidate_a / maxDepth), Math.ceil(13 * row.candidate_b / maxDepth)] : [0, 0];
+  const maxDepth = row ? Math.max(row.previous_depth, row.current_depth) : 1;
+  const lengths = row ? [Math.ceil(13 * row.previous_depth / maxDepth), Math.ceil(13 * row.current_depth / maxDepth)] : [0, 0];
   const lights = [];
   for (let y = 0; y < 8; y++) {
     for (let x = 0; x < 13; x++) {
@@ -209,7 +209,7 @@ function renderUnoMatrix() {
       if (unoMode === 'bonus') {
         if (row && ((y === 1 || y === 2) && x < lengths[0] || (y === 5 || y === 6) && x < lengths[1])) {
           classes.push(y <= 2 ? 'bar-a' : 'bar-b');
-          if (y <= 2 && row.candidate_a === row.selected || y >= 5 && row.candidate_b === row.selected) classes.push('selected');
+          if (y <= 2 && row.previous_depth <= row.current_depth || y >= 5 && row.current_depth <= row.previous_depth) classes.push('selected');
         }
       } else if (available.has(id)) {
         classes.push('node');
@@ -227,7 +227,7 @@ function renderUnoMatrix() {
   $('#uno-indicator').className = `uno-indicator ${unoMode}`;
   if (unoMode === 'bonus') {
     $('#uno-caption').textContent = row
-      ? `D${toSuper(row.N)}${toSub(row.n)} · upper bars: candidate A, ${row.candidate_a} moments; lower bars: candidate B, ${row.candidate_b} moments. ${row.candidate_a === row.candidate_b ? 'The depths tie, so both bars glow equally.' : 'The brighter, shorter bar is selected.'}`
+      ? `D${toSuper(row.N)}${toSub(row.n)} · upper bars: earlier FINAL_v2, ${row.previous_depth} moments; lower bars: current folder, ${row.current_depth} moments. ${row.previous_depth === row.current_depth ? 'The depths tie.' : 'The brighter bar marks the shallower comparison; the lower bar shows the current submission.'}`
       : 'Choose a graded bonus pair below: 2 ≤ N ≤ 15 and 1 ≤ n ≤ ⌊N/2⌋.';
   } else {
     const visible = route.filter(id => { const [r, c] = id.split(',').map(Number); return r >= 3 && r <= 10 && c >= 1 && c <= 13; }).length;

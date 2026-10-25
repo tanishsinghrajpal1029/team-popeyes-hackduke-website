@@ -1,0 +1,341 @@
+{
+  "note": "Previous FINAL_v2 depth versus current attached-folder submission.ipynb depth. Both are exact local circuit checks on static Willow topology; current is not always the shallower of the two.",
+  "cases": [
+    {
+      "N": 2,
+      "n": 1,
+      "previous_depth": 3,
+      "current_depth": 3
+    },
+    {
+      "N": 3,
+      "n": 1,
+      "previous_depth": 6,
+      "current_depth": 6
+    },
+    {
+      "N": 4,
+      "n": 1,
+      "previous_depth": 7,
+      "current_depth": 7
+    },
+    {
+      "N": 4,
+      "n": 2,
+      "previous_depth": 7,
+      "current_depth": 7
+    },
+    {
+      "N": 5,
+      "n": 1,
+      "previous_depth": 9,
+      "current_depth": 9
+    },
+    {
+      "N": 5,
+      "n": 2,
+      "previous_depth": 13,
+      "current_depth": 13
+    },
+    {
+      "N": 6,
+      "n": 1,
+      "previous_depth": 10,
+      "current_depth": 10
+    },
+    {
+      "N": 6,
+      "n": 2,
+      "previous_depth": 16,
+      "current_depth": 16
+    },
+    {
+      "N": 6,
+      "n": 3,
+      "previous_depth": 15,
+      "current_depth": 15
+    },
+    {
+      "N": 7,
+      "n": 1,
+      "previous_depth": 10,
+      "current_depth": 10
+    },
+    {
+      "N": 7,
+      "n": 2,
+      "previous_depth": 19,
+      "current_depth": 17
+    },
+    {
+      "N": 7,
+      "n": 3,
+      "previous_depth": 21,
+      "current_depth": 21
+    },
+    {
+      "N": 8,
+      "n": 1,
+      "previous_depth": 11,
+      "current_depth": 11
+    },
+    {
+      "N": 8,
+      "n": 2,
+      "previous_depth": 22,
+      "current_depth": 21
+    },
+    {
+      "N": 8,
+      "n": 3,
+      "previous_depth": 27,
+      "current_depth": 27
+    },
+    {
+      "N": 8,
+      "n": 4,
+      "previous_depth": 24,
+      "current_depth": 23
+    },
+    {
+      "N": 9,
+      "n": 1,
+      "previous_depth": 12,
+      "current_depth": 12
+    },
+    {
+      "N": 9,
+      "n": 2,
+      "previous_depth": 23,
+      "current_depth": 23
+    },
+    {
+      "N": 9,
+      "n": 3,
+      "previous_depth": 31,
+      "current_depth": 31
+    },
+    {
+      "N": 9,
+      "n": 4,
+      "previous_depth": 41,
+      "current_depth": 41
+    },
+    {
+      "N": 10,
+      "n": 1,
+      "previous_depth": 13,
+      "current_depth": 13
+    },
+    {
+      "N": 10,
+      "n": 2,
+      "previous_depth": 27,
+      "current_depth": 26
+    },
+    {
+      "N": 10,
+      "n": 3,
+      "previous_depth": 37,
+      "current_depth": 37
+    },
+    {
+      "N": 10,
+      "n": 4,
+      "previous_depth": 51,
+      "current_depth": 51
+    },
+    {
+      "N": 10,
+      "n": 5,
+      "previous_depth": 73,
+      "current_depth": 73
+    },
+    {
+      "N": 11,
+      "n": 1,
+      "previous_depth": 13,
+      "current_depth": 13
+    },
+    {
+      "N": 11,
+      "n": 2,
+      "previous_depth": 31,
+      "current_depth": 31
+    },
+    {
+      "N": 11,
+      "n": 3,
+      "previous_depth": 45,
+      "current_depth": 45
+    },
+    {
+      "N": 11,
+      "n": 4,
+      "previous_depth": 51,
+      "current_depth": 51
+    },
+    {
+      "N": 11,
+      "n": 5,
+      "previous_depth": 88,
+      "current_depth": 88
+    },
+    {
+      "N": 12,
+      "n": 1,
+      "previous_depth": 13,
+      "current_depth": 13
+    },
+    {
+      "N": 12,
+      "n": 2,
+      "previous_depth": 31,
+      "current_depth": 31
+    },
+    {
+      "N": 12,
+      "n": 3,
+      "previous_depth": 45,
+      "current_depth": 45
+    },
+    {
+      "N": 12,
+      "n": 4,
+      "previous_depth": 51,
+      "current_depth": 51
+    },
+    {
+      "N": 12,
+      "n": 5,
+      "previous_depth": 94,
+      "current_depth": 94
+    },
+    {
+      "N": 12,
+      "n": 6,
+      "previous_depth": 102,
+      "current_depth": 103
+    },
+    {
+      "N": 13,
+      "n": 1,
+      "previous_depth": 14,
+      "current_depth": 14
+    },
+    {
+      "N": 13,
+      "n": 2,
+      "previous_depth": 31,
+      "current_depth": 31
+    },
+    {
+      "N": 13,
+      "n": 3,
+      "previous_depth": 48,
+      "current_depth": 48
+    },
+    {
+      "N": 13,
+      "n": 4,
+      "previous_depth": 62,
+      "current_depth": 62
+    },
+    {
+      "N": 13,
+      "n": 5,
+      "previous_depth": 106,
+      "current_depth": 106
+    },
+    {
+      "N": 13,
+      "n": 6,
+      "previous_depth": 116,
+      "current_depth": 116
+    },
+    {
+      "N": 14,
+      "n": 1,
+      "previous_depth": 14,
+      "current_depth": 14
+    },
+    {
+      "N": 14,
+      "n": 2,
+      "previous_depth": 31,
+      "current_depth": 31
+    },
+    {
+      "N": 14,
+      "n": 3,
+      "previous_depth": 49,
+      "current_depth": 49
+    },
+    {
+      "N": 14,
+      "n": 4,
+      "previous_depth": 63,
+      "current_depth": 63
+    },
+    {
+      "N": 14,
+      "n": 5,
+      "previous_depth": 112,
+      "current_depth": 112
+    },
+    {
+      "N": 14,
+      "n": 6,
+      "previous_depth": 124,
+      "current_depth": 124
+    },
+    {
+      "N": 14,
+      "n": 7,
+      "previous_depth": 133,
+      "current_depth": 133
+    },
+    {
+      "N": 15,
+      "n": 1,
+      "previous_depth": 14,
+      "current_depth": 14
+    },
+    {
+      "N": 15,
+      "n": 2,
+      "previous_depth": 35,
+      "current_depth": 35
+    },
+    {
+      "N": 15,
+      "n": 3,
+      "previous_depth": 62,
+      "current_depth": 62
+    },
+    {
+      "N": 15,
+      "n": 4,
+      "previous_depth": 84,
+      "current_depth": 84
+    },
+    {
+      "N": 15,
+      "n": 5,
+      "previous_depth": 124,
+      "current_depth": 124
+    },
+    {
+      "N": 15,
+      "n": 6,
+      "previous_depth": 134,
+      "current_depth": 134
+    },
+    {
+      "N": 15,
+      "n": 7,
+      "previous_depth": 144,
+      "current_depth": 144
+    }
+  ]
+}

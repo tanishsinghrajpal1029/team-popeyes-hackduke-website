@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#071018">
+  <meta name="description" content="A beginner-friendly walk through Team Popeyes' current quantum circuit implementation, from inputs to exactness tests.">
+  <title>Inside the code · Willow Dicke Lab</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./styles.css?v=beginner1">
+  <link rel="stylesheet" href="./methodology.css?v=beginner2">
+</head>
+<body>
+  <div class="grain" aria-hidden="true"></div>
+  <header class="site-header">
+    <a class="brand" href="./index.html#top" aria-label="Willow Dicke Lab home"><span class="brand-mark" aria-hidden="true">✳</span><span>WILLOW<span class="brand-light">/</span>DICKE<span class="brand-light">LAB</span></span></a>
+    <nav aria-label="Main navigation"><a href="./index.html#state">The state</a><a href="./index.html#routing">Route lab</a><a href="./index.html#decisions">Our choices</a><a href="./methodology.html">How we built it</a><a class="story-active" href="./implementation.html" aria-current="page">Inside the code</a></nav>
+    <a class="header-cta" href="./methodology.html">Start with the basics <span aria-hidden="true">↗</span></a>
+  </header>
+  <main>
+    <section class="story-hero" id="top">
+      <div class="wrap story-hero-grid">
+        <div>
+          <p class="section-kicker">TEAM POPEYES / CODE GUIDE</p>
+          <h1>Inside the code.<br><em>One choice at a time.</em></h1>
+          <p class="story-lead">You do not need to read 2,000 lines of Python to understand this solution. The program receives a target state and a map of the chip's current errors. It chooses a circuit recipe, finds physical qubits for it, cleans up the gates, and returns an exact circuit.</p>
+          <div class="story-actions"><a class="button button-primary" href="#walkthrough">Walk through an example <span aria-hidden="true">↓</span></a><a class="button button-ghost" href="./methodology.html">Read the plain-English method <span aria-hidden="true">↗</span></a></div>
+          <p class="story-honesty">Source of truth: the attached <code>Team-Popeyes-DuHack-GoogleQAI-main-3</code> folder, especially <code>main.py</code> and <code>submission.ipynb</code>. This page documents that version, not the earlier <code>FINAL_v2</code> selector.</p>
+        </div>
+        <aside class="story-hero-card"><span class="mini-label">THE INPUT → OUTPUT CONTRACT</span><div><strong>Input</strong><span>N qubits, n ones, and four calibration dictionaries.</span></div><div><strong>Work</strong><span>Build, place, compile, simplify, and protect a circuit.</span></div><div><strong>Output</strong><span>A Cirq circuit and the set of qubits holding the Dicke state.</span></div><p>The judge adds its own final measurement operations.</p></aside>
+      </div>
+    </section>
+    <div class="wrap story-layout">
+      <nav class="story-toc" aria-label="Page sections"><span>ON THIS PAGE</span><a href="#inputs">01 · Inputs</a><a href="#walkthrough">02 · Example</a><a href="#selector">03 · Choice rule</a><a href="#algorithms">04 · Algorithms</a><a href="#cleanup">05 · Final gates</a><a href="#bonus-code">06 · Bonus code</a><a href="#checks">07 · Tests</a><a href="#file-map">08 · File map</a></nav>
+      <div class="story-content">
+        <section class="story-section" id="inputs">
+          <p class="section-kicker">01 / WHAT THE PROGRAM KNOWS</p>
+          <h2>First it reads the problem and the chip.</h2>
+          <p><code>create_dicke_state(N, n, ...)</code> is the main function the challenge runner calls. N is how many qubits should join the state; n is how many 1s each valid answer should contain. Four dictionaries describe the current hardware.</p>
+          <div class="story-facts"><div><strong>CZ errors</strong><p>How risky each available two-qubit connection is. Missing connections are unusable.</p></div><div><strong>One-qubit errors</strong><p>How risky individual rotations are, and which qubits are available.</p></div><div><strong>Readout errors</strong><p>Separate chances of misreading a 0 and a 1. These matter because qubits are measured at the end.</p></div></div>
+          <p>The dictionaries also give uncertainty. The code uses a cautious value, usually the measured rate plus one reported uncertainty, when comparing placements. It builds a graph containing only qubits and connections that have the needed calibration entries.</p>
+        </section>
+        <section class="story-section" id="walkthrough">
+          <p class="section-kicker">02 / WORKED EXAMPLE</p>
+          <h2>What happens for ten qubits and five 1s?</h2>
+          <p>The target <code>D¹⁰₅</code> means every 10-bit answer with exactly five 1s should appear with equal amplitude. There are <code>C(10,5) = 252</code> such answers. The code does not write all 252 answers by hand; its gates generate the superposition.</p>
+          <div class="story-steps">
+            <div><b>1</b><div><h3>Read the target</h3><p>N = 10, n = 5, so k = min(5, 5) = 5. No final all-qubit flip is needed.</p></div></div>
+            <div><b>2</b><div><h3>Pick the portfolio branch</h3><p>k is at least 3 and N is at least 9. The program therefore asks a builder to make several connected candidates. One useful shape splits the work across two arms.</p></div></div>
+            <div><b>3</b><div><h3>Choose physical qubits</h3><p>Candidate circuits are placed on working qubits and couplers. A rough error estimate considers gate failures, readout failures, and time spent waiting.</p></div></div>
+            <div><b>4</b><div><h3>Clean up the gates</h3><p>Several single-qubit rotations in a row become one equivalent rotation. The resulting circuit is expressed using Willow-compatible CZ and PhasedXZ gates.</p></div></div>
+            <div><b>5</b><div><h3>Echo long pauses and return</h3><p>If a qubit would wait through a long idle window, the code may insert an X–Y–X–Y echo. It returns the circuit and the actual physical qubits where the state now lives.</p></div></div>
+          </div>
+          <p>If the first builder cannot produce a circuit under the supplied calibration, the code tries its core path-based constructions. The attached folder reports 85 CZ gates for one chosen <code>D¹⁰₅</code> circuit, compared with 185 for an earlier local circuit; that is a circuit count, not a measured fidelity gain.</p>
+        </section>
+        <section class="story-section" id="selector">
+          <p class="section-kicker">03 / THE CHOICE RULE</p>
+          <h2>A simple decision tree controls many methods.</h2>
+          <p>Set <code>k = min(n, N−n)</code>. This lets the program prepare the state with fewer 1s when the target has more than half of its qubits excited. Then it flips every qubit at the end.</p>
+          <div class="story-code"><span class="eq-label">READABLE PSEUDOCODE · MAIN TASK</span><pre><code>if k == 0:
+    choose good readout qubits; make all 0s or all 1s
+elif k == 1:
+    spread one excitation through a branching tree
+elif k == 2 and N >= 6, or k >= 3 and N >= 9:
+    try the calibrated circuit portfolio
+    if it fails, use the core builder
+else:
+    use a small exact template when one fits
+    otherwise build along a connected path
+
+merge redundant one-qubit gates
+echo sufficiently long idle windows
+return the circuit and its physical qubits</code></pre></div>
+          <p>The interactive selector on the home page shows this first-choice rule. It does not execute Cirq in the browser. The actual Python code handles calibration, exceptions, and fallbacks.</p>
+        </section>
+        <section class="story-section" id="algorithms">
+          <p class="section-kicker">04 / WHY THESE ALGORITHMS</p>
+          <h2>Each recipe saves a different resource.</h2>
+          <div class="story-steps">
+            <div><b>A</b><div><h3>Branching W tree → save time</h3><p>For one excitation, a chain passes amplitude to one new qubit at a time. A tree lets several active branches split in parallel. The code grows candidate trees from low-cost roots and compares them.</p></div></div>
+            <div><b>B</b><div><h3>Offline exact synthesis → save gates</h3><p>For small states, a classical optimizer (L-BFGS) adjusted rotation angles until a short CZ-and-rotation pattern produced the exact target. It then tried to remove unnecessary CZs. The search happens before submission; the saved angles are not recomputed on Willow. Some patterns have several exact angle sets, so the team also compared how sensitive they were to small rotation errors.</p></div></div>
+            <div><b>C</b><div><h3>Two-arm and path portfolio → handle bigger states</h3><p>The portfolio generates paths and two-arm splits on connected regions, then rates their estimated errors. A two-arm design can do parts of the work at the same time; a single path may fit better on a particular calibration.</p></div></div>
+            <div><b>D</b><div><h3>Beam search → find a usable path</h3><p>A full search of every path would grow too large. Beam search extends promising partial paths one neighbor at a time, keeping only a limited number after each step. Its cost uses qubit and connection errors.</p></div></div>
+            <div><b>E</b><div><h3>Small path blocks → avoid extra routing</h3><p>The Bärtschi–Eidenbenz construction builds the state through repeated “split and cyclic shift” steps. The team replaced some of those steps with precomputed exact blocks that already act on neighboring qubits. A general version plus routing remains as a fallback.</p></div></div>
+          </div>
+          <div class="story-research-note"><span class="mini-label">IMPORTANT DISTINCTION</span><p>The website's route game runs classical Dijkstra on one source-to-target path. The submission solves a broader placement and circuit-generation problem with tree growth, beam search, candidate comparison, and routing when needed. The game illustrates one tradeoff; it is not the production algorithm. The offline angle search resembles the classical optimization part of VQE, but no hardware VQE loop runs during grading. No trained AI router chooses the displayed paths.</p></div>
+        </section>
+        <section class="story-section" id="cleanup">
+          <p class="section-kicker">05 / FROM IDEA TO CHIP GATES</p>
+          <h2>Make the circuit legal, then remove waste.</h2>
+          <p>A logical circuit may contain convenient high-level gates. The code compiles them into <code>CZ</code> operations between working neighbors and <code>PhasedXZ</code> rotations on single working qubits. It can combine several rotations between two CZ interactions into one equivalent rotation. This changes the instructions without changing the ideal state.</p>
+          <p>Waiting can let a qubit's phase drift. The program places four echo pulses, X–Y–X–Y, only in idle stretches with at least four free single-qubit slots. The sequence cancels ideally up to a global phase. On real hardware, the extra pulses may also fail; the attached folder's simulations say the tradeoff depends on the noise assumptions.</p>
+          <div class="story-equation"><span class="eq-label">WHY AN EXTRA PULSE IS A TRADEOFF</span><div>less waiting error ↔ more gate error</div><p>The program's sparse threshold is a design decision, not a guarantee that echo pulses improve every hardware run.</p></div>
+        </section>
+        <section class="story-section" id="bonus-code">
+          <p class="section-kicker">06 / THE BONUS ENTRY POINT</p>
+          <h2>Build many exact options; keep the shortest in time.</h2>
+          <p><code>create_dicke_state_adaptive(N, n)</code> is the bonus function. Despite its name, the chosen implementation uses ordinary circuits with no mid-circuit measurement. It gathers candidates from the small-state builder, a separate connected construction, branching W trees, two-arm split variants, and precomputed short end blocks.</p>
+          <div class="story-code"><span class="eq-label">READABLE PSEUDOCODE · BONUS</span><pre><code>candidates = build several exact, connected circuits
+for each candidate:
+    count moments (layers of simultaneous gates)
+return the candidate with the fewest moments</code></pre></div>
+          <p>The attached folder's checked table has 56 eligible pairs, 2 ≤ N ≤ 15. Its local <code>score_solution()</code> sum is 44.47. This sum is useful for comparing versions; the organizer's stated official bonus rule awards a point to the shallowest submission for each pair.</p>
+        </section>
+        <section class="story-section" id="checks">
+          <p class="section-kicker">07 / WHAT THE TESTS PROVE</p>
+          <h2>Exact, valid, and promising are separate claims.</h2>
+          <div class="story-validation"><div><span>EXACTNESS</span><h3>Correct state</h3><p>Ideal simulation checks the output amplitudes against the Dicke target. It allows a global phase, which cannot affect measurements.</p></div><div><span>VALIDITY</span><h3>Legal circuit</h3><p>Tests check physical connectivity, allowed gates, depth, and runtime. Missing hardware can still make some large requests impossible.</p></div><div><span>SIMULATION</span><h3>Estimated performance</h3><p>Fake calibrations and noise models compare recipes. Assumed waiting times and unmodeled errors mean this is not a hardware prediction.</p></div></div>
+          <p>The folder reports 419 automated tests and a 969-build robustness sweep. It also records per-case bonus depths in <code>experiments/results/notebook_bonus.csv</code>. The organizer's preliminary three-case hardware email tested an earlier notebook, not this attached <code>submission.ipynb</code>.</p>
+        </section>
+        <section class="story-section story-sources" id="file-map">
+          <p class="section-kicker">08 / FIND YOUR WAY THROUGH THE FILES</p>
+          <h2>Where to look next.</h2>
+          <ul>
+            <li><code>submission.ipynb</code> — the notebook the attached folder names as its challenge entry.</li>
+            <li><code>main.py</code> — source for the notebook's circuit functions; start at <code>create_dicke_state</code> and <code>build</code>.</li>
+            <li><code>ARCHITECTURE.md</code> — detailed algorithms, assumptions, and measured local comparisons.</li>
+            <li><code>experiments/synth.py</code> — offline search for short exact small-state circuits.</li>
+            <li><code>experiments/bonus_depth.py</code> — checks and records bonus moments.</li>
+            <li><code>experiments/noise.py</code> — local noise model, with its assumptions.</li>
+            <li><code>tests/</code> — ideal-state, device-rule, and robustness checks.</li>
+          </ul>
+          <p><a href="https://github.com/tanishsinghrajpal1029/Team-Popeyes-DuHack-GoogleQAI" target="_blank" rel="noopener noreferrer">Open the Team Popeyes project repository ↗</a></p>
+        </section>
+      </div>
+    </div>
+    <section class="story-ending"><div class="wrap"><p class="section-kicker">NOW TRY IT</p><h2>Move a slider. See which recipe the code chooses.</h2><a class="button button-primary" href="./index.html#decisions">Open the interactive selector <span aria-hidden="true">↗</span></a></div></section>
+  </main>
+  <footer><div class="wrap footer-grid"><a class="brand" href="#top"><span class="brand-mark" aria-hidden="true">✳</span><span>WILLOW<span class="brand-light">/</span>DICKE<span class="brand-light">LAB</span></span></a><p>Team Popeyes · DuQuantum · Google Quantum AI challenge · Major League Hacking. The browser demo uses illustrative errors; local simulations are identified.</p><a href="#top">Back to top ↑</a></div></footer>
+</body>
+</html>

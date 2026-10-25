@@ -4,119 +4,181 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#071018">
-  <meta name="description" content="How Team Popeyes designed, routed, simulated, validated, and explained Dicke-state circuits for the Google Quantum AI challenge at DuQuantum.">
-  <title>What we built · Willow Dicke Lab</title>
+  <meta name="description" content="A beginner-friendly explanation of Team Popeyes' Dicke-state circuit, why each algorithm was chosen, and how we tested it.">
+  <title>How we built it · Willow Dicke Lab</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="./styles.css?v=story1">
-  <link rel="stylesheet" href="./methodology.css?v=story2">
+  <link rel="stylesheet" href="./styles.css?v=beginner1">
+  <link rel="stylesheet" href="./methodology.css?v=beginner2">
   <script src="./methodology.js?v=story1" defer></script>
 </head>
 <body>
   <div class="grain" aria-hidden="true"></div>
   <header class="site-header">
     <a class="brand" href="./index.html#top" aria-label="Willow Dicke Lab home"><span class="brand-mark" aria-hidden="true">✳</span><span>WILLOW<span class="brand-light">/</span>DICKE<span class="brand-light">LAB</span></span></a>
-    <nav aria-label="Main navigation"><a href="./index.html#state">The state</a><a href="./index.html#routing">Route lab</a><a href="./index.html#uno">UNO Q</a><a href="./index.html#decisions">Our choices</a><a class="story-active" href="./methodology.html" aria-current="page">What we built</a></nav>
+    <nav aria-label="Main navigation"><a href="./index.html#state">The state</a><a href="./index.html#routing">Route lab</a><a href="./index.html#decisions">Our choices</a><a class="story-active" href="./methodology.html" aria-current="page">How we built it</a><a href="./implementation.html">Inside the code</a></nav>
     <a class="header-cta" href="./index.html#routing">Try the lab <span aria-hidden="true">↗</span></a>
   </header>
 
   <main>
-    <section class="story-hero" id="top" aria-labelledby="story-title">
+    <section class="story-hero" id="top">
       <div class="wrap story-hero-grid">
         <div>
-          <p class="section-kicker">TEAM POPEYES / THE FULL FIELD NOTES</p>
-          <h1 id="story-title">What we built.<br><em>Why we built it.</em></h1>
-          <p class="story-lead">Our challenge was to prepare an exact Dicke state on a connected but imperfect quantum chip. This page walks through the target state, the circuit decisions, the classical optimization, the tests, and the Arduino exhibit—with the equations behind each choice.</p>
-          <div class="story-actions"><a class="button button-primary" href="#target">Start with the math <span aria-hidden="true">↓</span></a><a class="button button-ghost" href="./index.html#routing">Play with a route <span aria-hidden="true">↗</span></a></div>
-          <p class="story-honesty">Our route demo uses synthetic error rates. Local checks and preliminary organizer hardware feedback are labeled separately; final judging has not happened here.</p>
+          <p class="section-kicker">TEAM POPEYES / START HERE</p>
+          <h1>How we built it.<br><em>From zero background.</em></h1>
+          <p class="story-lead">Imagine 105 connected lights. We need to make a chosen group of them share a fixed number of “on” signals equally. The chip is noisy, and only neighboring lights can directly work together. Here is how we turned that problem into a working quantum circuit.</p>
+          <div class="story-actions"><a class="button button-primary" href="#background">Learn the basics <span aria-hidden="true">↓</span></a><a class="button button-ghost" href="./implementation.html">See the code decisions <span aria-hidden="true">↗</span></a></div>
+          <p class="story-honesty">This page follows the attached <code>Team-Popeyes-DuHack-GoogleQAI-main-3</code> folder: <code>main.py</code> embedded in <code>submission.ipynb</code>. It is a newer implementation than the previously displayed <code>FINAL_v2</code> notebook. All performance comparisons here are local unless we explicitly say otherwise.</p>
         </div>
-        <div class="story-hero-card" aria-label="Project at a glance">
-          <span class="mini-label">PROJECT AT A GLANCE</span>
-          <div><strong>105</strong><span>qubits in the Willow layout</span></div>
-          <div><strong>228 / 228</strong><span>main pairs passed local rule checks</span></div>
-          <div><strong>56 / 56</strong><span>bonus pairs had checked exact candidates</span></div>
-          <p>These counts describe local validation, not measured hardware performance.</p>
-        </div>
+        <aside class="story-hero-card" aria-label="Project at a glance">
+          <span class="mini-label">THE WHOLE PROJECT IN 4 STEPS</span>
+          <div><strong>01</strong><span>Describe the exact quantum state we want.</span></div>
+          <div><strong>02</strong><span>Choose a circuit recipe for its size.</span></div>
+          <div><strong>03</strong><span>Place that recipe on working, lower-error qubits.</span></div>
+          <div><strong>04</strong><span>Check exactness, device rules, and noise separately.</span></div>
+          <p>The browser route game and Arduino display explain ideas; neither runs a quantum computer.</p>
+        </aside>
       </div>
     </section>
 
     <div class="wrap story-layout">
-      <aside class="story-toc" aria-label="On this page"><span>READ THE FIELD NOTES</span><a href="#target">01 · The target</a><a href="#hardware">02 · The hardware</a><a href="#construction">03 · The circuits</a><a href="#placement">04 · Noise &amp; placement</a><a href="#routing-math">05 · Alternate paths</a><a href="#validation">06 · Validation</a><a href="#bonus">07 · Bonus</a><a href="#exhibit">08 · The exhibit</a><a href="#sources">Sources &amp; limits</a></aside>
-      <article class="story-content">
+      <nav class="story-toc" aria-label="Page sections">
+        <span>ON THIS PAGE</span>
+        <a href="#background">01 · First-time words</a>
+        <a href="#target">02 · The target state</a>
+        <a href="#hardware">03 · The chip</a>
+        <a href="#construction">04 · Our circuit recipes</a>
+        <a href="#placement">05 · Placement and noise</a>
+        <a href="#routing-math">06 · The path demo</a>
+        <a href="#validation">07 · How we checked it</a>
+        <a href="#bonus">08 · Bonus challenge</a>
+        <a href="#exhibit">09 · Arduino display</a>
+        <a href="#sources">Sources and limits</a>
+      </nav>
+      <div class="story-content">
+        <section class="story-section" id="background">
+          <p class="section-kicker">01 / FIRST-TIME WORDS</p>
+          <h2>Five words make the rest easier.</h2>
+          <p>A <strong>bit</strong> is a 0 or 1. A <strong>qubit</strong> is a physical device whose quantum state can combine 0 and 1. You cannot read all of that combination in one measurement; a measurement gives one ordinary bitstring, such as <code>0101</code>.</p>
+          <div class="story-facts">
+            <div><strong>Gate</strong><p>One operation that changes one or two qubits. Think of it as an instruction in a program.</p></div>
+            <div><strong>Circuit</strong><p>A timed list of gates. Gates that can happen together form one “moment.”</p></div>
+            <div><strong>Noise</strong><p>The small errors in gates, waiting, and reading the answer. More operations and longer waits usually give noise more chances.</p></div>
+          </div>
+          <p><strong>Excitation</strong> just means a 1 in a measured bitstring. <strong>Fidelity</strong> is a way to say how close the produced quantum state is to the intended one. The challenge's score is a different quantity; a local fidelity estimate is only a guide.</p>
+        </section>
+
         <section class="story-section" id="target">
-          <p class="section-kicker">01 / THE TARGET</p>
-          <h2>Equal amplitudes, <span class="accent-lime">one excitation count.</span></h2>
-          <p>A Dicke state puts equal amplitude on every bitstring with exactly <em>n</em> ones among <em>N</em> qubits. There are <em>K = C(N,n)</em> such strings. The normalization factor matters: their probabilities must add to one.</p>
-          <div class="story-equation" role="math" aria-label="Dicke N n equals one over square root of N choose n times the sum of all computational basis strings with Hamming weight n"><span class="eq-label">THE STATE WE MUST PREPARE</span><div>|D<sup>N</sup><sub>n</sub>⟩ = <span class="eq-frac"><span>1</span><span>√C(N,n)</span></span> Σ<sub>|x|=n</sub> |x⟩</div></div>
-          <p>In the Z basis, a valid bitstring has probability <code>1/C(N,n)</code>; every other string has probability zero. But Z probabilities alone cannot show whether the relative phases are right. The judges also measure in the X basis, where interference exposes phase errors.</p>
-          <div class="story-equation story-equation-violet" role="math" aria-label="For distinct qubits i and j, the ideal XX correlator is two n times N minus n divided by N times N minus one"><span class="eq-label">ONE IDEAL X-BASIS CHECK</span><div>⟨X<sub>i</sub>X<sub>j</sub>⟩ = <span class="eq-frac"><span>2n(N−n)</span><span>N(N−1)</span></span> <small>for i ≠ j</small></div><p>A pair flip stays inside the Dicke subspace only when those two bits differ. This is one correlator, not the entire X-basis score.</p></div>
-          <div class="story-playground card-surface" aria-labelledby="story-playground-title"><div><span class="mini-label">TRY THE MATH</span><h3 id="story-playground-title">Change N and n.</h3><p>See how the number of allowed strings and a two-qubit X correlation change.</p><label for="story-n-qubits">Qubits N <strong id="story-n-value">4</strong></label><input id="story-n-qubits" type="range" min="2" max="12" value="4"><label for="story-n-excitations">Excitations n <strong id="story-k-value">2</strong></label><input id="story-n-excitations" type="range" min="0" max="4" value="2"></div><div class="story-math-readout" aria-live="polite"><div><span>STATE</span><strong id="story-state">D⁴₂</strong></div><div><span>ALLOWED STRINGS</span><strong id="story-combinations">6</strong></div><div><span>Z CHANCE EACH</span><strong id="story-probability">1/6</strong></div><div><span>IDEAL ⟨XᵢXⱼ⟩</span><strong id="story-correlation">2/3</strong></div></div></div>
-          <p class="story-side-note">For example, <code>D⁴₂</code> is the equal superposition of six strings: 0011, 0101, 0110, 1001, 1010, and 1100. Each occurs with probability 1/6 in an ideal Z measurement.</p>
+          <p class="section-kicker">02 / WHAT WE ARE MAKING</p>
+          <h2>Share the ones equally.</h2>
+          <p>Suppose we have four qubits and want exactly two 1s. There are six possible answers: <code>0011</code>, <code>0101</code>, <code>0110</code>, <code>1001</code>, <code>1010</code>, and <code>1100</code>. A Dicke state gives each of those answers the same quantum amplitude. Any answer with a different number of 1s should have zero amplitude.</p>
+          <p>An <strong>amplitude</strong> is a number attached to a possible answer. Its size determines the chance of measuring that answer; its phase affects how answers interfere when we rotate the measurement basis. A <strong>superposition</strong> means the state carries amplitudes for several answers before measurement.</p>
+          <div class="story-equation"><span class="eq-label">OPTIONAL MATH · THE TARGET</span><div>|D<sup>N</sup><sub>n</sub>⟩ = <span class="eq-frac"><span>1</span><span>√C(N,n)</span></span> Σ<sub>|x|=n</sub> |x⟩</div><p>N = number of qubits; n = number of 1s; C(N,n) = number of valid strings. The factor in front makes the total probability 1.</p></div>
+          <p><strong>Why two measurement checks?</strong> Counting the 1s tests whether the answers look right. It cannot tell whether the quantum phases are right. The organizer also measures after rotating into the X basis, where those phases change the pattern of interference. Two circuits can show the same ordinary answers but differ on this second check.</p>
+          <div class="story-playground card-surface">
+            <div><span class="mini-label">TRY THE NUMBERS</span><h3>Change the target.</h3><p>Choose N and n to see how many answers must be shared equally.</p><label for="story-n-qubits">Qubits N <strong id="story-n-value">4</strong></label><input id="story-n-qubits" type="range" min="2" max="15" value="4"><label for="story-n-excitations">Excitations n <strong id="story-k-value">2</strong></label><input id="story-n-excitations" type="range" min="0" max="4" value="2"></div>
+            <div class="story-math-readout"><div><span>STATE</span><strong id="story-state">D⁴₂</strong></div><div><span>VALID STRINGS</span><strong id="story-combinations">6</strong></div><div><span>CHANCE OF EACH</span><strong id="story-probability">1/6</strong></div><div><span>IDEAL PAIR X CHECK</span><strong id="story-correlation">2/3</strong></div></div>
+          </div>
+          <p class="story-side-note">The X number above is one example correlator, not the entire organizer score.</p>
         </section>
 
         <section class="story-section" id="hardware">
-          <p class="section-kicker">02 / THE HARDWARE</p><h2>A beautiful state meets <span class="accent-coral">an imperfect graph.</span></h2>
-          <p>The supplied <code>willow_pink</code> connectivity has 105 qubits and 182 possible two-qubit couplers. A circuit cannot ask arbitrary distant qubits to interact. The main task permits CZ gates only on supplied working couplers and single-qubit <code>PhasedXZ</code> gates on working qubits.</p>
-          <div class="story-facts"><div><strong>Topology</strong><p>Qubits are vertices; usable CZ couplers are edges. Broken qubits or couplers disappear from the working graph.</p></div><div><strong>Calibration</strong><p>The runner supplies CZ, single-qubit, and asymmetric readout error dictionaries. Placements can change with those rates.</p></div><div><strong>Limits</strong><p>A build has under one minute to return. Circuits over 1,750 moments are rejected before the runner adds X-basis Hadamards and final measurements.</p></div></div>
-          <p>That is why an abstract low-gate circuit is only a starting point. It must be placed, compiled into native operations, and checked against the actual working graph.</p>
+          <p class="section-kicker">03 / WHY THE CHIP CHANGES THE PLAN</p>
+          <h2>Qubits can only talk across a connection.</h2>
+          <p>Willow's supplied <code>willow_pink</code> layout is a map of 105 qubits with 182 possible two-qubit connections. A two-qubit gate needs a working connection between its qubits. Think of qubits as towns and connections as roads: a route can be blocked or more error-prone on one day than another.</p>
+          <div class="story-facts">
+            <div><strong>CZ</strong><p>The allowed two-qubit gate. These interactions are especially important because they create most of the entanglement and can be costly when repeated.</p></div>
+            <div><strong>PhasedXZ</strong><p>The allowed one-qubit gate. It rotates a single qubit; several such rotations can sometimes be combined into one.</p></div>
+            <div><strong>1,750</strong><p>Maximum circuit moments for the main task. The runner checks this before adding X-basis rotations and final measurements.</p></div>
+          </div>
+          <p>The code receives calibration dictionaries: which qubits and connections work, how often gates fail, and how often reading 0 or 1 is wrong. That means the same logical circuit can be placed differently each time it is built.</p>
         </section>
 
         <section class="story-section" id="construction">
-          <p class="section-kicker">03 / WHAT WE BUILT</p><h2>From one recipe to <span class="accent-lime">a portfolio.</span></h2>
-          <p>We built and compared several exact-state constructions. The aim was to keep entangling gates and depth low while preserving the state exactly. <code>FINAL_v2</code> uses a fixed selector based on state size and shape, validates each returned circuit, and has fallbacks for its entangled branches.</p>
-          <div class="story-steps"><div><b>01</b><div><h3>Simplify the native circuit</h3><p>We replaced generic controlled-rotation decomposition with explicit CNOT-based patterns, then compiled to the allowed CZ and single-qubit gates. This reduced avoidable two-qubit overhead.</p></div></div><div><b>02</b><div><h3>Route the construction on the grid</h3><p>A hub-walk layout moves the active interaction through neighboring qubits and recruits fresh qubits from free grid neighbors. It avoids repeatedly routing a long logical line through SWAPs.</p></div></div><div><b>03</b><div><h3>Search placements and specialize small cases</h3><p>We tried several placements on the working calibration graph and kept promising candidates. Offline synthesis provided exact templates for selected small states.</p></div></div><div><b>04</b><div><h3>Select a valid family for each case</h3><p>Product states and <code>N ≤ 3</code> use the hub-walk family. Five shapes—<code>(7,3)</code>, <code>(7,4)</code>, <code>(8,3)</code>, <code>(8,4)</code>, and <code>(8,5)</code>—try PSC templates, then the synthesized builder, then hub-walk. Other <code>4 ≤ N ≤ 8</code> states try the synthesized builder, then hub-walk. Entangled <code>N ≥ 9</code> states try the calibrated two-row construction, then hub-walk.</p></div></div></div>
-          <div class="story-equation"><span class="eq-label">THE SYMMETRY THAT SAVES WORK</span><div>|D<sup>N</sup><sub>n</sub>⟩ = X<sup>⊗N</sup> |D<sup>N</sup><sub>N−n</sub>⟩</div><p>For more than half the qubits excited, we can prepare the complementary Dicke state and flip every qubit.</p></div>
-          <div class="story-research-note"><span class="mini-label">IDEAS WE TESTED ALONG THE WAY</span><p>Offline angle synthesis gave us exact small-state templates; larger template searches were also run on PSC. We investigated VQE-style optimization as a classical way to find angles, but did not put a hardware VQE loop in the submission: the grader requires an exact returned circuit and hardware is not available during circuit construction. AI assisted research and implementation; the route lab’s alternative path is classical Dijkstra, not a trained AI router.</p></div>
-          <p>The website’s selector mirrors <code>FINAL_v2</code>’s branch order. It does not run quantum circuits in your browser.</p>
+          <p class="section-kicker">04 / THE ACTUAL SUBMISSION</p>
+          <h2>Different sizes need different recipes.</h2>
+          <p>The current folder's entry point is <code>create_dicke_state</code> in <code>main.py</code>, embedded in <code>submission.ipynb</code>. It starts with <code>k = min(n, N−n)</code>. For example, making 8 ones among 10 qubits is equivalent to making 2 ones, then flipping all 10 qubits at the end. This saves work.</p>
+          <div class="story-steps">
+            <div><b>01</b><div><h3>All zeros or all ones</h3><p>If k = 0, select readable qubits. No entangling CZ gates are needed.</p></div></div>
+            <div><b>02</b><div><h3>Exactly one 1: branch like a tree</h3><p>Start with one 1 and split its amplitude among neighbors. Multiple branches work in the same round, shortening the circuit. For the two-qubit case, the code compares placements more directly.</p></div></div>
+            <div><b>03</b><div><h3>Small, denser states: use a saved exact template</h3><p>For most remaining N ≤ 8 cases, classical optimization found a short gate pattern offline. The pattern is stored in the code; only its placement is chosen using the day's calibration. Selected templates from the team's PSC search are included in this table.</p></div></div>
+            <div><b>04</b><div><h3>Larger states: compare connected shapes</h3><p>When k = 2 and N ≥ 6, or k ≥ 3 and N ≥ 9, the code uses a portfolio builder. It tries paths and two-arm splits on connected regions, then estimates which valid circuit will tolerate noise best. If this branch fails, it falls back to the core construction.</p></div></div>
+            <div><b>05</b><div><h3>Fallback: build along a path</h3><p>The core builder can use small, precomputed “share and shift” blocks along neighboring qubits. These blocks come from a Dicke-state method called Bärtschi–Eidenbenz. If needed, it routes that general construction on a connected region. This is the safety net for cases without a preferred template.</p></div></div>
+            <div><b>06</b><div><h3>Clean and protect the result</h3><p>Combine consecutive one-qubit rotations, compile to CZ and PhasedXZ, and place an X–Y–X–Y echo only in long idle windows. Echo pulses aim to reduce slow phase drift, but they also add gate risk.</p></div></div>
+          </div>
+          <div class="story-equation"><span class="eq-label">THE SMALLER-SIDE TRICK</span><div>|D<sup>N</sup><sub>n</sub>⟩ = X<sup>⊗N</sup> |D<sup>N</sup><sub>N−n</sub>⟩</div><p>Flipping every 0 to 1 and every 1 to 0 changes a state with N−n ones into the state with n ones.</p></div>
+          <p><a class="story-inline-link" href="./implementation.html">Follow one example through the actual functions →</a></p>
         </section>
 
         <section class="story-section" id="placement">
-          <p class="section-kicker">04 / WHY PLACEMENT MATTERS</p><h2>Fewer gates help, <span class="accent-violet">but errors decide.</span></h2>
-          <p>Two circuits of the same logical size can behave differently on different physical qubits. We used the supplied gate and readout rates to guide placement and compared local noise simulations. One screening model estimates a no-error likelihood by multiplying gate, readout, and idle-survival terms.</p>
-          <div class="story-equation story-equation-violet"><span class="eq-label">A PLACEMENT HEURISTIC, NOT THE JUDGE'S SCORE</span><div class="eq-factors"><span>P<sub>survive</sub> ≈</span><span>∏<sub>gates g</sub>(1−p<sub>g</sub>)</span><span>× ∏<sub>qubits q</sub>[(1−f)(1−r<sub>0,q</sub>) + f(1−r<sub>1,q</sub>)]</span><span>× e<sup>−t<sub>idle</sub>/T<sub>eff</sub></sup></span></div><p>Here <code>f = n/N</code> is the ideal marginal chance that a qubit reads 1. The idle time constant is an assumption in a local model, not supplied calibration.</p></div>
-          <p>We also tested dynamical decoupling: echo pulses during idle windows can cancel some slow phase drift, while the extra pulses can themselves fail. The tradeoff changed with the assumed noise model, so the page presents it as an engineering choice rather than a guaranteed hardware gain.</p>
-          <div class="story-mini-grid"><div><span>Depth</span><strong>37 → 15</strong><small>W₁₀ chain versus tree, local circuit moments</small></div><div><span>Two-qubit gates</span><strong>80 → 15</strong><small>D⁶₃ routed baseline versus exact synthesis, CZ count</small></div><div><span>Portfolio</span><strong>185 → 85</strong><small>D¹⁰₅ earlier versus selected circuit, CZ count</small></div></div>
-          <p class="story-side-note">These are local comparison examples recorded during development. They are not measured Willow score improvements.</p>
+          <p class="section-kicker">05 / WHY THE BEST-LOOKING MAP MAY LOSE</p>
+          <h2>Count errors, not just gates.</h2>
+          <p>A short circuit on unreliable qubits may lose to a slightly longer one on reliable qubits. The code removes unavailable qubits and connections, then searches for connected shapes. Its placement estimate includes CZ errors, one-qubit errors, asymmetric readout errors, and time spent waiting.</p>
+          <p>Each reported error comes with uncertainty. The code often uses <strong>reported error + one uncertainty unit</strong> as a conservative estimate, so a qubit does not look artificially good because of a lucky measurement. It also considers that a Dicke qubit is expected to read 1 about <code>n/N</code> of the time.</p>
+          <div class="story-equation story-equation-violet"><span class="eq-label">OPTIONAL MATH · A ROUGH PLACEMENT COST</span><div>cost ≈ gate error + readout error + waiting error</div><p>This is a screening estimate used to choose a placement. It is not the organizer's score, and real device errors can interact in ways this sum cannot capture.</p></div>
+          <p><strong>Why merge rotations?</strong> If several one-qubit gates occur between two interactions, they can be multiplied into one equivalent gate. That preserves the ideal state while removing physical pulses. The code then adds sparse echo pulses only when an idle stretch has at least four free one-qubit slots.</p>
         </section>
 
         <section class="story-section" id="routing-math">
-          <p class="section-kicker">05 / FINDING AN ALTERNATIVE PATH</p><h2>Why a detour can <span class="accent-coral">win.</span></h2>
-          <p>The interactive route lab is a classical illustration of routing, separate from the submission’s full circuit placement. It first removes blocked nodes. It then runs Dijkstra twice: once with unit edge costs for the fewest hops, and once with an illustrative CZ-error cost for each move.</p>
-          <div class="story-equation"><span class="eq-label">NOISE-AWARE ROUTE COST</span><div>C(P) = Σ<sub>e∈P</sub> −m<sub>e</sub> ln(1−p<sub>e</sub>)</div><p><code>mₑ = 3</code> for each modeled SWAP before the last edge, and <code>mₑ = 1</code> for the final CZ interaction.</p></div>
-          <div class="story-equation story-equation-violet"><span class="eq-label">THE SAME RULE AS A SURVIVAL PRODUCT</span><div>arg min<sub>P</sub> C(P) = arg max<sub>P</sub> ∏<sub>e∈P</sub>(1−p<sub>e</sub>)<sup>m<sub>e</sub></sup></div><p>The logarithm turns a product of survival probabilities into additive edge costs, which Dijkstra can minimize.</p></div>
-          <div class="story-route-example"><span class="mini-label">TRY THE DEFAULT ROUTE-LAB EXAMPLE</span><div><strong>10 hops</strong><span>direct path via illustrative weak qubit <code>(6,7)</code></span><b>59.4%</b></div><div><strong>12 hops</strong><span>alternative corridor avoids its high-error links</span><b>88.7%</b></div><p>At the default 7% weak-link setting, the longer route has higher modeled gate survival. Blocking <code>(6,7)</code> forces both searches to go around it. <a href="./index.html#routing">Change the endpoints or weak-link error yourself ↗</a></p></div>
-          <p class="story-side-note">The 59.4% and 88.7% figures assume independent CZ failures and approximately three CZs per SWAP. They omit decoherence, crosstalk, readout, scheduling, and real Willow calibration.</p>
+          <p class="section-kicker">06 / THE INTERACTIVE PATH GAME</p>
+          <h2>Why a longer detour can be safer.</h2>
+          <p>The route game on the home page is a <strong>teaching model</strong>. It is not the submission router. It lets you choose two qubits, block a weak qubit, and compare a path with fewest steps to one with lower estimated gate error.</p>
+          <div class="story-steps">
+            <div><b>01</b><div><h3>Make a map</h3><p>Every qubit becomes a point. Every working connection becomes a line. Remove blocked points.</p></div></div>
+            <div><b>02</b><div><h3>Run Dijkstra twice</h3><p>First give every move cost 1 to find the fewest hops. Then give risky connections a higher cost and find the cheapest total risk.</p></div></div>
+            <div><b>03</b><div><h3>Explain the tradeoff</h3><p>Moving a quantum state with a SWAP usually needs several two-qubit gates. One bad connection can outweigh the cost of two extra, cleaner moves.</p></div></div>
+          </div>
+          <div class="story-equation"><span class="eq-label">OPTIONAL MATH · THE DEMO'S RISK SCORE</span><div>C(path) = Σ<sub>edges</sub> −m log(1−p)</div><p>p is an illustrative CZ error; m is 3 for a modeled SWAP and 1 for the final interaction. Lower cost corresponds to a higher product of gate survival chances. This omits waiting, readout, crosstalk, and real Willow calibration.</p></div>
+          <p><a class="story-inline-link" href="./index.html#routing">Try blocking a qubit in the path game →</a> The submission itself also uses beam search for connected paths and a calibration-aware portfolio of circuit shapes.</p>
         </section>
 
         <section class="story-section" id="validation">
-          <p class="section-kicker">06 / HOW WE CHECKED IT</p><h2>Separate exactness, <span class="accent-lime">rules,</span> and noise.</h2>
-          <p>These checks answer different questions. Passing one does not imply the others, and a simulated score is not a hardware score.</p>
-          <div class="story-validation"><div><span>01 / IDEAL STATE</span><h3>Did we make the right vector?</h3><p>Small circuits were simulated without noise and compared with the target Dicke state up to a global phase. The bonus candidates were checked the same way for all 56 graded pairs.</p></div><div><span>02 / DEVICE RULES</span><h3>Could the circuit be submitted?</h3><p>Our local sweep checked 228 main pairs for native gates, working qubits and couplers, build success, and the 1,750-moment cap under a fresh synthetic calibration.</p></div><div><span>03 / NOISY ESTIMATE</span><h3>Which choice might hold up?</h3><p>Local noise simulations and calibration-based estimates compared candidate placements and constructions. These guided decisions but cannot settle the final hardware ranking.</p></div></div>
-          <p><strong>Preliminary hardware feedback, October 25:</strong> the earlier main configuration scored <code>1.3316 ± 0.0148</code> across <code>(10,3)</code>, <code>(10,5)</code>, and <code>(15,4)</code>, leading the reported main-track ranking. With the same calibration input, <code>FINAL_v2</code> returns the same circuits and placements for those three pairs. The organizer did not directly score <code>FINAL_v2</code> in that rerun; its small-state PSC branches also differ from the earlier notebook. The final set of pairs and device errors may change.</p>
-          <div class="story-equation"><span class="eq-label">THE MAIN-TASK SCORE SHAPE</span><div>S = 1 / (E<sub>Z</sub> + E<sub>X</sub>)</div><p>The challenge’s <code>E_Z</code> tests excitation count and uniformity; <code>E_X</code> tests X-basis correlators. The hidden test pairs, correlator cutoff, and hardware calibration affect the final result.</p></div>
+          <p class="section-kicker">07 / HOW WE KNOW WHAT WE KNOW</p>
+          <h2>Three checks answer three questions.</h2>
+          <div class="story-validation">
+            <div><span>01 / IDEAL STATE</span><h3>Is the math right?</h3><p>Simulate without errors. Check that the output is the exact Dicke state, allowing only an irrelevant overall phase.</p></div>
+            <div><span>02 / DEVICE RULES</span><h3>Can Willow accept it?</h3><p>Check the allowed gates, working qubits and connections, build time, and the 1,750-moment limit. The attached folder includes automated validity and robustness checks.</p></div>
+            <div><span>03 / NOISE ESTIMATE</span><h3>Which one might work better?</h3><p>Run local simulations with gate, readout, and assumed waiting errors. These comparisons guide choices, but they are not final hardware measurements.</p></div>
+          </div>
+          <p>The attached folder reports a 419-test suite, a 969-build robustness sweep, and simulated comparisons on several fake calibration sets. Those claims come from the folder's README and architecture notes; this website does not turn them into a Willow hardware score.</p>
+          <div class="story-equation story-equation-violet"><span class="eq-label">OPTIONAL MATH · MAIN-TASK SCORE SHAPE</span><div>score = 1 / (Z error + X error)</div><p>Z checks the measured number and balance of 1s. X checks interference. The organizer later averaged the error terms over repeated trials before taking the reciprocal, to avoid unstable averages near perfect scores.</p></div>
+          <p>The earlier organizer email measured a different notebook configuration on three cases. That feedback is useful history, but <strong>the attached <code>submission.ipynb</code> was not directly hardware-scored in that email</strong>.</p>
         </section>
 
         <section class="story-section" id="bonus">
-          <p class="section-kicker">07 / BONUS</p><h2>When the objective changes, <span class="accent-violet">the choice changes.</span></h2>
-          <p>The bonus allows adaptive circuits but does not require them. It grades depth on Willow-connected exact circuits, with no hardware run. <code>FINAL_v2</code> uses the same bonus function as the previous combined notebook: for each eligible pair it builds valid exact candidates and returns the one with fewer Cirq moments.</p>
-          <div class="story-equation story-equation-violet"><span class="eq-label">BONUS CHOICE</span><div>d<sup>*</sup>(N,n) = min<sub>c ∈ valid exact candidates</sub> depth(c)</div><p>The eligible range is <code>2 ≤ N ≤ 15</code> and <code>1 ≤ n ≤ ⌊N/2⌋</code>, giving 56 pairs. A non-adaptive circuit is acceptable when it is shallower.</p></div>
-          <p>The site’s bonus bars use checked depth data. A displayed sum of <code>Nn/depth</code> is a local comparison metric; the official bonus awards a point to the shallowest submission for a pair.</p>
+          <p class="section-kicker">08 / A DIFFERENT GOAL</p>
+          <h2>For bonus, the clock matters most.</h2>
+          <p>The main task asks for good behavior on noisy hardware. The bonus asks for an exact circuit with as few <strong>moments</strong> as possible. A moment is one layer of gates that can run at the same time. We therefore compare several exact recipes and return the one with the fewest moments.</p>
+          <p>The current <code>create_dicke_state_adaptive</code> function builds candidates from small exact templates, branching W trees, two-arm splits, and short precomputed end blocks. It uses no measurements or feed-forward inside the circuit: the team's checked measurement-based options were not shallower, and classically controlled gates failed the stated validator.</p>
+          <div class="story-equation"><span class="eq-label">OPTIONAL MATH · THE BONUS CHOICE</span><div>chosen circuit = arg min<sub>valid exact circuits</sub> moments</div><p>The attached folder reports a local <code>score_solution()</code> sum of 44.47 across 56 pairs with 2 ≤ N ≤ 15. That number is a comparison metric. The organizer said the official bonus point goes to the shallowest submission for each pair.</p></div>
+          <p><a class="story-inline-link" href="./index.html#decisions">Compare current and earlier depths on the home page →</a></p>
         </section>
 
         <section class="story-section" id="exhibit">
-          <p class="section-kicker">08 / MAKING IT VISIBLE</p><h2>The website and <span class="accent-lime">UNO Q.</span></h2>
-          <p>We built the public site so visitors can change a Dicke state, inspect the Willow graph, compare paths, see the circuit selector, and explore the bonus depths. We then translated the routing and depth displays to the UNO Q’s built-in 8 × 13 LED matrix.</p>
-          <div class="story-equation"><span class="eq-label">MAPPING GRAPH COORDINATES TO THE MATRIX</span><div>pixel(r,c) = 13(r−3) + (c−1)</div><p>This maps Willow rows 3–10 and columns 1–13 into 104 LED positions. The website shows the full 105-qubit graph; the matrix shows its central window.</p></div>
-          <p>The board runs a classical companion app. It does not perform quantum operations. Its controls at <code>127.0.0.1:7000</code> are local to the connected computer; the public website includes a matching browser preview for everyone else.</p>
-          <div class="story-actions"><a class="button button-primary" href="./index.html#uno">See the matrix preview <span aria-hidden="true">↗</span></a><a class="button button-ghost" href="./index.html#decisions">Try the circuit selector <span aria-hidden="true">↗</span></a></div>
+          <p class="section-kicker">09 / MAKING IT VISIBLE</p>
+          <h2>The Arduino tells the story in lights.</h2>
+          <p>The UNO Q's built-in 8 × 13 LED matrix has 104 lights, so it shows a central 104-position window of the 105-qubit map. It can display a direct route, a lower-risk detour, or two bonus-depth bars. A local companion page controls it when the board is connected by USB.</p>
+          <p>The Arduino runs a <strong>classical illustration</strong>. It does not prepare Dicke states or access Willow. The browser preview on this public website works without the board.</p>
+          <div class="story-equation"><span class="eq-label">MAP COORDINATES TO A DISPLAY PIXEL</span><div>pixel(row,column) = 13(row−3) + (column−1)</div><p>That maps Willow rows 3–10 and columns 1–13 to the 104 lights.</p></div>
         </section>
 
-        <section class="story-section story-sources" id="sources"><p class="section-kicker">SOURCES &amp; LIMITS</p><h2>What supports <span class="accent-coral">these claims?</span></h2><p>The circuit and validation descriptions reflect the unchanged <code>FINAL_v2</code> notebook, saved local checks, and the organizer's preliminary three-case feedback supplied to the team. The routing equations describe the website’s teaching model. Google Quantum AI supplied the challenge; this explainer is an independent Team Popeyes project.</p><ul><li><a href="./downloads/DuQuantum_submission_FINAL_v2.ipynb" download>Download FINAL_v2 notebook ↗</a> — exact submission functions and challenge rules.</li><li><a href="https://github.com/tanishsinghrajpal1029/Team-Popeyes-DuHack-GoogleQAI/tree/main/arduino-uno-q-willow" target="_blank" rel="noopener noreferrer">Arduino UNO Q companion app ↗</a> — matrix and local controls.</li><li><a href="https://quantumai.google/static/site-assets/downloads/willow-spec-sheet.pdf" target="_blank" rel="noopener noreferrer">Google Quantum AI Willow spec sheet ↗</a> — device reference.</li><li><a href="https://duquantum.org/" target="_blank" rel="noopener noreferrer">DuQuantum ↗</a> · <a href="https://mlh.io/" target="_blank" rel="noopener noreferrer">Major League Hacking ↗</a> — event context.</li></ul><p class="story-side-note">Synthetic errors and local simulations are useful for comparing ideas. They do not reproduce drift, crosstalk, leakage, every device parameter, or the judges’ final hidden choices.</p></section>
-      </article>
+        <section class="story-section story-sources" id="sources">
+          <p class="section-kicker">SOURCES & LIMITS</p>
+          <h2>What this page is based on.</h2>
+          <p>The implementation description follows the attached folder's <code>README.md</code>, <code>ARCHITECTURE.md</code>, <code>main.py</code>, and <code>submission.ipynb</code>. The bonus depths come from its <code>experiments/results/notebook_bonus.csv</code>. The route game uses synthetic errors and its own classical model.</p>
+          <ul>
+            <li><a href="./implementation.html">Inside the code</a> — function-by-function beginner guide and one worked example.</li>
+            <li><a href="https://github.com/tanishsinghrajpal1029/Team-Popeyes-DuHack-GoogleQAI" target="_blank" rel="noopener noreferrer">Team Popeyes project repository</a> — code and research files.</li>
+            <li><a href="https://quantumai.google/static/site-assets/downloads/willow-spec-sheet.pdf" target="_blank" rel="noopener noreferrer">Google Quantum AI Willow spec sheet</a> — device reference.</li>
+            <li><a href="https://duquantum.org/" target="_blank" rel="noopener noreferrer">DuQuantum</a> and <a href="https://mlh.io/" target="_blank" rel="noopener noreferrer">Major League Hacking</a> — event context.</li>
+          </ul>
+          <p>Simulation does not capture every hardware effect: drift, crosstalk, leakage, and device-to-device timing can change results. The hidden judging pairs and correlator settings may also differ from local tests.</p>
+        </section>
+      </div>
     </div>
-    <section class="story-ending"><div class="wrap"><p class="section-kicker">GO BACK TO THE PLAYGROUND</p><h2>Now test the tradeoff yourself.</h2><a class="button button-primary" href="./index.html#routing">Open the route lab <span aria-hidden="true">↗</span></a></div></section>
+    <section class="story-ending"><div class="wrap"><p class="section-kicker">NEXT STEP</p><h2>Want to see exactly how the program decides?</h2><a class="button button-primary" href="./implementation.html">Open the code guide <span aria-hidden="true">↗</span></a></div></section>
   </main>
-  <footer><div class="wrap footer-grid"><a class="brand" href="./index.html#top"><span class="brand-mark" aria-hidden="true">✳</span><span>WILLOW<span class="brand-light">/</span>DICKE<span class="brand-light">LAB</span></span></a><p>Team Popeyes · DuQuantum · Google Quantum AI challenge · Major League Hacking. This independent explainer labels illustrative and local results.</p><a href="#top">Back to top ↑</a></div></footer>
+  <footer><div class="wrap footer-grid"><a class="brand" href="#top"><span class="brand-mark" aria-hidden="true">✳</span><span>WILLOW<span class="brand-light">/</span>DICKE<span class="brand-light">LAB</span></span></a><p>Team Popeyes · DuQuantum · Google Quantum AI challenge · Major League Hacking. The browser demo uses illustrative errors; local simulations are identified.</p><a href="#top">Back to top ↑</a></div></footer>
 </body>
 </html>
