@@ -9,15 +9,15 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="./styles.css?v=combined2">
-  <script src="./app.js?v=combined2" defer></script>
+  <link rel="stylesheet" href="./styles.css?v=uno-method3">
+  <script src="./app.js?v=uno-method3" defer></script>
 </head>
 <body>
   <div class="grain" aria-hidden="true"></div>
   <header class="site-header">
     <a class="brand" href="#top" aria-label="Willow Dicke Lab home"><span class="brand-mark" aria-hidden="true">✳</span><span>WILLOW<span class="brand-light">/</span>DICKE<span class="brand-light">LAB</span></span></a>
     <nav aria-label="Main navigation">
-      <a href="#state">The state</a><a href="#routing">Route lab</a><a href="#decisions">Our choices</a><a href="#evidence">Evidence</a>
+      <a href="#state">The state</a><a href="#routing">Route lab</a><a href="#uno">UNO Q</a><a href="#decisions">Our choices</a><a href="#evidence">Evidence</a>
     </nav>
     <a class="header-cta" href="#routing">Try the lab <span aria-hidden="true">↗</span></a>
   </header>
@@ -93,11 +93,20 @@
             <label class="checkbox-row"><input id="block-weak" type="checkbox"><span>Mark <code>(6, 7)</code> unavailable</span></label>
             <div class="route-comparison"><div class="route-result hops"><span>FEWEST HOPS</span><strong id="hops-count">—</strong><small id="hops-risk">—</small></div><div class="route-result weighted"><span>NOISE AWARE</span><strong id="weighted-count">—</strong><small id="weighted-risk">—</small></div></div>
             <p id="route-explanation" class="route-explanation" aria-live="polite">Choose two qubits to compare routes.</p>
+            <div class="route-paths" aria-live="polite"><div><span>FEWEST-HOP PATH</span><code id="hops-path">—</code></div><div><span>ALTERNATIVE PATH</span><code id="weighted-path">—</code></div></div>
             <p class="micro-copy route-caveat">Toy cost: independent CZ failures, approximately three CZs per SWAP. It omits idle decoherence, readout, parallel scheduling, and the exact gate compilation. This is a teaching demo, not the submission router.</p>
           </div>
         </div>
       </div>
       <div class="wrap callout"><div class="callout-icon">↝</div><p><strong>Why not simply choose the shortest path?</strong> A SWAP typically costs several entangling gates. One bad coupler can erase the gain from a shorter route. Our actual submission weighs calibrated gate error, readout error, idle time, and expected score when choosing a placement.</p></div>
+      <div class="wrap route-method card-surface" aria-labelledby="route-method-title">
+        <div><span class="mini-label">HOW THE ALTERNATIVE PATH IS FOUND</span><h3 id="route-method-title">Turn the chip into a weighted map.</h3><p>Each qubit is a node and each coupler is an edge. Marking a qubit unavailable removes it from both searches. The gray route minimizes hop count. The green route runs Dijkstra’s algorithm again, this time minimizing estimated gate error.</p></div>
+        <ol><li><strong>Price each move.</strong> If a coupler has illustrative CZ error <em>p</em>, a preterminal SWAP costs <code>−3 ln(1−p)</code>; the final interaction costs <code>−ln(1−p)</code>.</li><li><strong>Choose the smallest total.</strong> Adding those costs is equivalent to maximizing <code>∏(1−p)<sup>m</sup></code>, where <em>m</em> is 3 for a SWAP or 1 for the final interaction.</li><li><strong>Compare and explain.</strong> The path readout above lists the exact qubits, SWAP count, and estimated gate survival for both choices. A longer detour wins when its lower edge errors offset the extra moves.</li></ol>
+      </div>
+      <div class="wrap uno-panel card-surface" id="uno" aria-labelledby="uno-title">
+        <div class="uno-copy"><span class="mini-label">ARDUINO UNO Q · BROWSER PREVIEW</span><h3 id="uno-title">The chip, in 104 lights.</h3><p>The UNO Q’s built-in 8 × 13 LED matrix shows the central window of this Willow map. Use the route controls above to change its paths, or use the Dicke-state sliders below to see the bonus depth bars. This browser version is interactive for everyone; the physical board runs the companion app over USB.</p><div class="uno-switch" role="group" aria-label="Matrix preview mode"><button class="uno-mode active" data-uno-mode="aware" type="button">Noise-aware</button><button class="uno-mode" data-uno-mode="direct" type="button">Fewest hops</button><button class="uno-mode" data-uno-mode="bonus" type="button">Bonus depths</button></div><p id="uno-caption" class="uno-caption" aria-live="polite">Loading matrix preview…</p><p class="uno-local-note">Board connected to your computer? <a href="http://127.0.0.1:7000/" target="_blank" rel="noopener noreferrer">Open its local controls ↗</a> This address works only on the computer connected to the UNO Q; it is not a public board stream.</p></div>
+        <div class="uno-display"><div class="uno-bezel"><div class="uno-bezel-top"><span>UNO Q</span><span>8 × 13 MATRIX</span></div><div id="uno-matrix" class="uno-matrix" role="img" aria-label="Interactive browser preview of the Arduino UNO Q LED matrix"></div><div class="uno-bezel-bottom"><span id="uno-indicator" class="uno-indicator"></span><span id="uno-display-label">ERROR-AWARE ROUTE</span></div></div><div class="uno-key"><span><i class="uno-key-route"></i> route</span><span><i class="uno-key-node"></i> qubit</span><span><i class="uno-key-marker"></i> marker</span></div></div>
+      </div>
     </section>
 
     <section class="coherence-section section-pad" id="checks" aria-labelledby="checks-title">

@@ -106,6 +106,7 @@ function renderBonusDepth(N, n) {
       : 'Loading checked bonus depths…';
     for (const id of ['bonus-a-depth', 'bonus-b-depth', 'bonus-selected-depth']) $(`#${id}`).textContent = '—';
     for (const id of ['bonus-a-bar', 'bonus-b-bar']) $(`#${id}`).style.width = '0%';
+    renderUnoMatrix();
     return;
   }
   $('#bonus-eligibility').textContent = `D${toSuper(N)}${toSub(n)}: both circuits passed the exact-state check.`;
@@ -117,6 +118,7 @@ function renderBonusDepth(N, n) {
   $('#bonus-b-bar').style.width = `${100 * row.candidate_b / max}%`;
   $('#bonus-a-bar').classList.toggle('chosen', row.candidate_a === row.selected);
   $('#bonus-b-bar').classList.toggle('chosen', row.candidate_b === row.selected);
+  renderUnoMatrix();
 }
 fetch('./bonus-depths.json').then(response => {
   if (!response.ok) throw new Error(`HTTP ${response.status}`);
@@ -134,6 +136,7 @@ const nodeId = ([r, c]) => `${r},${c}`;
 const label = id => `(${id.replace(',', ', ')})`;
 const specialWeak = '6,7';
 let topology, neighbors, blocked = new Set(), start = '6,2', end = '6,12', mapMode = 'start';
+let unoMode = 'aware', latestRoutes = {direct: [], aware: []};
 const baseError = (a, b) => {
   const token = [a, b].sort().join('|');
   let hash = 13;
@@ -160,7 +163,7 @@ function shortestPath(weighted) {
     });
     for (const next of nexts) {
       if (!remaining.has(next)) continue;
-      const cost = weighted ? -3 * Math.log(1 - edgeError(current, next)) : 1;
+      const cost = weighted ? -(next === end ? 1 : 3) * Math.log1p(-edgeError(current, next)) : 1;
       const candidate = dist[current] + cost;
       if (candidate < dist[next] - 1e-10) { dist[next] = candidate; previous[next] = current; }
     }
@@ -186,9 +189,58 @@ function xy(id) {
   const [r, c] = id.split(',').map(Number);
   return [33 + c * 52, 34 + r * 51];
 }
+function renderUnoMatrix() {
+  if (!topology) return;
+  const row = bonusDepths.get(`${+$('#decision-n').value},${+$('#decision-k').value}`);
+  const route = latestRoutes[unoMode] || [];
+  const routeNodes = new Set(route);
+  const available = new Set(topology.qubits.map(nodeId));
+  const maxDepth = row ? Math.max(row.candidate_a, row.candidate_b) : 1;
+  const lengths = row ? [Math.ceil(13 * row.candidate_a / maxDepth), Math.ceil(13 * row.candidate_b / maxDepth)] : [0, 0];
+  const lights = [];
+  for (let y = 0; y < 8; y++) {
+    for (let x = 0; x < 13; x++) {
+      const id = `${y + 3},${x + 1}`;
+      const classes = ['uno-led'];
+      if (unoMode === 'bonus') {
+        if (row && ((y === 1 || y === 2) && x < lengths[0] || (y === 5 || y === 6) && x < lengths[1])) {
+          classes.push(y <= 2 ? 'bar-a' : 'bar-b');
+          if (y <= 2 && row.candidate_a === row.selected || y >= 5 && row.candidate_b === row.selected) classes.push('selected');
+        }
+      } else if (available.has(id)) {
+        classes.push('node');
+        if (blocked.has(id)) classes.push('blocked');
+        else if (routeNodes.has(id)) classes.push('on-route');
+        if (id === specialWeak && !blocked.has(id)) classes.push('weak');
+        if (id === start || id === end) classes.push('marker');
+      }
+      lights.push(`<span class="${classes.join(' ')}" aria-hidden="true"></span>`);
+    }
+  }
+  $('#uno-matrix').innerHTML = lights.join('');
+  const displayLabel = unoMode === 'bonus' ? 'BONUS DEPTH DUEL' : unoMode === 'direct' ? 'FEWEST-HOP ROUTE' : 'NOISE-AWARE ROUTE';
+  $('#uno-display-label').textContent = displayLabel;
+  $('#uno-indicator').className = `uno-indicator ${unoMode}`;
+  if (unoMode === 'bonus') {
+    $('#uno-caption').textContent = row
+      ? `D${toSuper(row.N)}${toSub(row.n)} · upper bars: candidate A, ${row.candidate_a} moments; lower bars: candidate B, ${row.candidate_b} moments. ${row.candidate_a === row.candidate_b ? 'The depths tie, so both bars glow equally.' : 'The brighter, shorter bar is selected.'}`
+      : 'Choose a graded bonus pair below: 2 ≤ N ≤ 15 and 1 ≤ n ≤ ⌊N/2⌋.';
+  } else {
+    const visible = route.filter(id => { const [r, c] = id.split(',').map(Number); return r >= 3 && r <= 10 && c >= 1 && c <= 13; }).length;
+    $('#uno-caption').textContent = route.length
+      ? `${displayLabel.toLowerCase()} · ${route.length - 1} hops · ${visible} of ${route.length} route qubits visible in the central matrix window.${visible < route.length ? ' The full path is on the map above.' : ''}`
+      : 'No connected route at this setting. Unblock a qubit or choose new endpoints.';
+  }
+}
+$$('.uno-mode').forEach(button => button.addEventListener('click', () => {
+  unoMode = button.dataset.unoMode;
+  $$('.uno-mode').forEach(el => el.classList.toggle('active', el === button));
+  renderUnoMatrix();
+}));
 function renderRoute() {
   if (!topology) return;
   const fewest = shortestPath(false), aware = shortestPath(true);
+  latestRoutes = {direct: fewest, aware};
   const svg = $('#topology-map');
   const edgeMarkup = topology.couplers.map(([q1, q2]) => {
     const [x1, y1] = xy(nodeId(q1)), [x2, y2] = xy(nodeId(q2));
@@ -213,12 +265,15 @@ function renderRoute() {
   };
   writeResult(fewest, '#hops-count', '#hops-risk');
   writeResult(aware, '#weighted-count', '#weighted-risk');
+  $('#hops-path').textContent = fewest.length ? fewest.map(label).join(' → ') : 'No route';
+  $('#weighted-path').textContent = aware.length ? aware.map(label).join(' → ') : 'No route';
   let message;
   if (!fewest.length || !aware.length) message = 'No connected path remains. Unblock a qubit or choose new endpoints.';
   else if (same) message = 'Both rules choose the same route at this setting. Try raising the weak-link error or moving an endpoint.';
   else if (aware.length > fewest.length) message = `The noise-aware route uses ${aware.length - fewest.length} extra hop${aware.length - fewest.length === 1 ? '' : 's'} to avoid higher-risk links.`;
   else message = 'Both routes use the same number of hops, but the noise-aware route chooses lower-risk links.';
   $('#route-explanation').textContent = message;
+  renderUnoMatrix();
 }
 function handleNode(id) {
   if (mapMode === 'block') {

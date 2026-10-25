@@ -50,3 +50,50 @@
 .score-panel .validation-caveat{grid-column:1/-1;max-width:none;margin:0;padding-top:13px;border-top:1px solid #9ece62}
 @media(max-width:800px){.bonus-lab{grid-template-columns:1fr;gap:16px}.validation-stats strong{font-size:24px}}
 @media(max-width:600px){.bonus-lab{padding:20px}.validation-stats{grid-template-columns:1fr}.validation-stats>div{min-height:0}.bonus-depth-row{grid-template-columns:78px 1fr 30px;font-size:9px}}
+
+/* Routing method and Arduino UNO Q browser preview. */
+.route-paths{display:grid;gap:10px;margin:16px 0 18px}
+.route-paths>div{background:#102932;border:1px solid #37525b;border-radius:10px;padding:11px 13px}
+.route-paths span{display:block;color:#a9c2bd;font:10px var(--mono);letter-spacing:.08em;margin-bottom:7px}
+.route-paths code{display:block;color:#e6f5ec;font:11px/1.6 var(--mono);overflow-wrap:anywhere}
+.route-method{display:grid;grid-template-columns:.9fr 1.1fr;gap:36px;margin-top:24px;padding:30px;background:#102932;border:1px solid #35555b}
+.route-method h3,.uno-panel h3{font-size:clamp(24px,2.5vw,34px);line-height:1.15;margin:13px 0}
+.route-method p,.route-method li,.uno-panel p{color:#bfd2cc;font-size:13px;line-height:1.7}
+.route-method ol{margin:0;padding-left:24px;display:grid;gap:14px}
+.route-method li::marker{color:var(--lime);font-family:var(--mono)}
+.route-method strong{color:#f1f8f1}
+.route-method code{color:var(--lime);font-size:12px}
+.uno-panel{display:grid;grid-template-columns:1fr minmax(310px,.8fr);gap:34px;align-items:center;margin-top:24px;padding:30px;background:#142a33;border:1px solid #42605a;scroll-margin-top:90px}
+.uno-copy>p{max-width:660px}
+.uno-switch{display:flex;flex-wrap:wrap;gap:8px;margin:20px 0 16px}
+.uno-mode{border:1px solid #5f7973;background:#193740;color:#d9e9e1;border-radius:999px;padding:9px 13px;font:11px var(--mono);cursor:pointer}
+.uno-mode:hover,.uno-mode:focus-visible{border-color:var(--lime)}
+.uno-mode.active{background:var(--lime);border-color:var(--lime);color:#153025}
+.uno-caption{min-height:48px;color:var(--lime)!important;font:11px/1.6 var(--mono)!important}
+.uno-local-note{font-size:11px!important;color:#a9c2bd!important}
+.uno-local-note a{color:var(--lime);text-decoration:underline;text-underline-offset:3px}
+.uno-display{max-width:470px;width:100%;justify-self:center}
+.uno-bezel{padding:18px 18px 14px;border:2px solid #659496;border-radius:24px;background:linear-gradient(145deg,#173e46,#082029 70%);box-shadow:0 16px 38px #07171c88,inset 0 2px 0 #7db5b444}
+.uno-bezel-top,.uno-bezel-bottom{display:flex;align-items:center;justify-content:space-between;color:#b8dbd1;font:10px var(--mono);letter-spacing:.08em}
+.uno-bezel-top{margin-bottom:13px}
+.uno-bezel-top span:first-child{color:#e6f5ed;font-weight:700;font-size:15px}
+.uno-bezel-bottom{justify-content:flex-start;gap:10px;margin-top:14px}
+.uno-matrix{display:grid;grid-template-columns:repeat(13,minmax(0,1fr));grid-template-rows:repeat(8,1fr);gap:clamp(3px,.55vw,6px);aspect-ratio:13/8;padding:12px;background:#05161c;border:1px solid #537c7d;border-radius:12px;box-shadow:inset 0 0 16px #0009}
+.uno-led{display:block;aspect-ratio:1;border-radius:50%;background:#17272d;box-shadow:inset 0 1px 2px #0008}
+.uno-led.node{background:#465c5b}
+.uno-led.on-route{background:#b9e875;box-shadow:0 0 9px #b9e8759c}
+.uno-led.weak{background:#eea77b;box-shadow:0 0 8px #eea77b99}
+.uno-led.blocked{background:#1a2429;outline:1px solid #894e4e}
+.uno-led.marker{background:#f6f2d9;box-shadow:0 0 11px #fffae6}
+.uno-led.bar-a{background:#8d96df;box-shadow:0 0 6px #8d96df8a}
+.uno-led.bar-b{background:#66a9b0;box-shadow:0 0 6px #66a9b08a}
+.uno-led.selected{background:#e8f9b4;box-shadow:0 0 10px #e8f9b4a9}
+.uno-indicator{width:9px;height:9px;border-radius:50%;background:#b9e875;box-shadow:0 0 9px #b9e875}
+.uno-indicator.direct{background:#8d96df;box-shadow:0 0 9px #8d96df}
+.uno-indicator.bonus{background:#e8f9b4;box-shadow:0 0 9px #e8f9b4}
+.uno-key{display:flex;flex-wrap:wrap;gap:16px;margin:15px 4px 0;color:#aec7c0;font:10px var(--mono)}
+.uno-key span{display:inline-flex;align-items:center;gap:6px}
+.uno-key i{display:inline-block;width:8px;height:8px;border-radius:50%}
+.uno-key-route{background:#b9e875}.uno-key-node{background:#465c5b}.uno-key-marker{background:#f6f2d9}
+@media(max-width:850px){.route-method,.uno-panel{grid-template-columns:1fr;gap:18px}.uno-display{justify-self:start}}
+@media(max-width:600px){.route-method,.uno-panel{padding:21px}.uno-matrix{padding:8px;gap:3px}.uno-switch{gap:6px}.uno-mode{font-size:10px;padding:8px 10px}}
