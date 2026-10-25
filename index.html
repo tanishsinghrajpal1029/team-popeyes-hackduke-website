@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="./styles.css?v=uno-method3">
-  <script src="./app.js?v=uno-method3" defer></script>
+  <script src="./app.js?v=final-v2" defer></script>
 </head>
 <body>
   <div class="grain" aria-hidden="true"></div>
@@ -118,7 +118,7 @@
       <div class="wrap">
         <p class="section-kicker">04 / THE COMBINED SOLUTION</p>
         <div class="decision-intro">
-          <div><h2 id="decision-title">Two constructions. <span class="accent-lime">One selector.</span></h2><p>Choose a Dicke state to see which main-task circuit family the combined notebook tries first. It checks the returned gates and qubits against the supplied calibration, then tries the other family if needed.</p></div>
+          <div><h2 id="decision-title">Several recipes. <span class="accent-lime">One selector.</span></h2><p>Choose a Dicke state to see which main-task circuit family <code>FINAL_v2</code> tries first. The notebook checks its native gates, qubits, and couplers against the supplied calibration before returning it.</p></div>
           <div class="decision-controls">
             <label for="decision-n">Qubits N <strong id="decision-n-label">9</strong><input id="decision-n" type="range" min="2" max="20" value="9"></label>
             <label for="decision-k">Excitations n <strong id="decision-k-label">4</strong><input id="decision-k" type="range" min="0" max="9" value="4"></label>
@@ -127,19 +127,21 @@
         <div class="decision-grid">
           <div class="selected-strategy card-surface">
             <span class="mini-label">MAIN TASK · <span id="decision-case">D⁹₄</span></span>
-            <div class="strategy-symbol" id="strategy-symbol">✦</div>
-            <h3 id="strategy-name">Measured crossover</h3>
-            <p id="strategy-description">This case uses the alternative team construction first because it scored better in the local comparison.</p>
-            <div class="strategy-meta"><span id="strategy-detail">N = 9 · n = 4</span><span id="strategy-reason">Validated circuit; other family remains a fallback</span></div>
+            <div class="strategy-symbol" id="strategy-symbol">▤</div>
+            <h3 id="strategy-name">Two-row construction</h3>
+            <p id="strategy-description">A calibration-aware two-row circuit is tried first. The hub-walk builder is the validity fallback.</p>
+            <div class="strategy-meta"><span id="strategy-detail">N = 9 · n = 4</span><span id="strategy-reason">Order: two-row → hub-walk</span></div>
           </div>
           <div class="strategy-menu" id="strategy-menu">
-            <div data-strategy="default"><span>01</span><div><b>Portfolio default</b><small>Most main-task pairs</small></div></div>
-            <div data-strategy="crossover"><span>02</span><div><b>Measured crossover</b><small>D⁷₃ and D⁹₄</small></div></div>
-            <div data-strategy="fallback"><span>03</span><div><b>Validity fallback</b><small>Try the other construction</small></div></div>
-            <div data-strategy="bonus"><span>04</span><div><b>Bonus depth duel</b><small>Choose the shallower exact circuit</small></div></div>
+            <div data-strategy="small"><span>01</span><div><b>Product &amp; small</b><small>n = 0, n = N, or N ≤ 3</small></div></div>
+            <div data-strategy="psc"><span>02</span><div><b>PSC template</b><small>D⁷₃, D⁷₄, D⁸₃, D⁸₄, D⁸₅</small></div></div>
+            <div data-strategy="synth"><span>03</span><div><b>Synthesized</b><small>Other 4 ≤ N ≤ 8 pairs</small></div></div>
+            <div data-strategy="two-row"><span>04</span><div><b>Two-row</b><small>Entangled N ≥ 9 pairs</small></div></div>
+            <div data-strategy="fallback"><span>05</span><div><b>Validity fallback</b><small>Hub-walk if a candidate fails</small></div></div>
+            <div data-strategy="bonus"><span>06</span><div><b>Bonus depth duel</b><small>Choose the shallower exact circuit</small></div></div>
           </div>
         </div>
-        <p class="method-note">The main-task choice follows prior local noise simulations; final Willow performance can change with calibration and hidden scoring choices. Every returned main circuit is checked for native gates, available qubits and couplers, and the 1,750-moment limit.</p>
+        <p class="method-note">For the three reported N ≥ 9 hardware cases, this two-row branch produces the same circuits as the earlier main configuration that ranked first in the preliminary rerun. Small-case PSC choices come from local work. Final performance can change with calibration and hidden scoring choices. <a href="./downloads/DuQuantum_submission_FINAL_v2.ipynb" download>Download the unchanged FINAL_v2 notebook ↗</a></p>
         <div class="bonus-lab card-surface" aria-live="polite">
           <div><span class="mini-label">BONUS · LIVE DEPTH LOOKUP</span><h3>Which exact circuit is shallower?</h3><p>For graded bonus pairs, the notebook builds both candidates and returns the valid one with fewer moments. Move the sliders above to inspect a pair.</p><p id="bonus-eligibility" class="bonus-eligibility">Loading checked depths…</p></div>
           <div class="bonus-depth-visual">
@@ -151,7 +153,7 @@
       </div>
     </section>
 
-    <section class="evidence-section section-pad" id="evidence" aria-labelledby="evidence-title"><div class="wrap"><p class="section-kicker">05 / WHY THESE CHOICES</p><h2 id="evidence-title">Count the gates. <span class="accent-coral">Then count the errors.</span></h2><p class="evidence-lead">Three concrete examples from the team's research. All performance figures below come from simulation or exact circuit counts; no hardware score is claimed.</p><div class="evidence-grid"><article class="evidence-card"><span class="evidence-index">A / PARALLELISM</span><h3>A tree beats a chain on time.</h3><p>For W₁₀, both spread one excitation. The tree lets separate branches work at once.</p><div class="evidence-number"><span>37</span><i>→</i><strong>15</strong><small>moments, chain → tree</small></div><p class="evidence-foot">In the team's idle-noise model, the X error term fell from 0.0075 to 0.0042.</p></article><article class="evidence-card"><span class="evidence-index">B / SYNTHESIS</span><h3>Learn exact angles offline.</h3><p>For D⁶₃, an exact small-state circuit uses far fewer entangling gates than a routed baseline.</p><div class="evidence-number"><span>80</span><i>→</i><strong>15</strong><small>CZ gates, routed baseline → synthesis</small></div><p class="evidence-foot">The angles are precomputed; the calibration chooses the placement at build time.</p></article><article class="evidence-card"><span class="evidence-index">C / PORTFOLIO</span><h3>Let a better recipe win.</h3><p>For D¹⁰₅, the selected two-arm construction beat an earlier circuit under the same evaluation harness.</p><div class="evidence-number"><span>185</span><i>→</i><strong>85</strong><small>CZ gates, earlier → selected</small></div><p class="evidence-foot">The submission uses a measured crossover rule, with fallbacks if a candidate fails.</p></article></div><div class="score-panel"><div><span class="mini-label">LATEST LOCAL VALIDATION</span><h3>Every checked case builds.</h3><p>The combined notebook passed a fresh synthetic-calibration rule sweep. Bonus depths were checked by ideal-state simulation on the static Willow topology.</p></div><div class="validation-stats"><div><strong>228/228</strong><span>main pairs · N = 2–20</span></div><div><strong>56/56</strong><span>bonus pairs · N = 2–15</span></div><div><strong>44.27</strong><span>bonus Σ Nn/depth · comparison metric</span></div></div><p class="validation-caveat">These are local checks, not a measured Willow score. The official bonus awards a point to the shallowest submission under its judging rule.</p></div></div></section>
+    <section class="evidence-section section-pad" id="evidence" aria-labelledby="evidence-title"><div class="wrap"><p class="section-kicker">05 / WHY THESE CHOICES</p><h2 id="evidence-title">Count the gates. <span class="accent-coral">Then count the errors.</span></h2><p class="evidence-lead">Three concrete examples from the team's research. Gate and depth counts below are local circuit comparisons; the preliminary hardware feedback is labeled separately.</p><div class="evidence-grid"><article class="evidence-card"><span class="evidence-index">A / PARALLELISM</span><h3>A tree beats a chain on time.</h3><p>For W₁₀, both spread one excitation. The tree lets separate branches work at once.</p><div class="evidence-number"><span>37</span><i>→</i><strong>15</strong><small>moments, chain → tree</small></div><p class="evidence-foot">In the team's idle-noise model, the X error term fell from 0.0075 to 0.0042.</p></article><article class="evidence-card"><span class="evidence-index">B / SYNTHESIS</span><h3>Learn exact angles offline.</h3><p>For D⁶₃, an exact small-state circuit uses far fewer entangling gates than a routed baseline.</p><div class="evidence-number"><span>80</span><i>→</i><strong>15</strong><small>CZ gates, routed baseline → synthesis</small></div><p class="evidence-foot">The angles are precomputed; the calibration chooses the placement at build time.</p></article><article class="evidence-card"><span class="evidence-index">C / TWO-ROW</span><h3>Choose a circuit that survives.</h3><p>For D¹⁰₅, the selected two-row construction cut entangling gates against an earlier local circuit.</p><div class="evidence-number"><span>185</span><i>→</i><strong>85</strong><small>CZ gates, earlier → selected</small></div><p class="evidence-foot">The N ≥ 9 branch was retained after preliminary hardware feedback on three cases.</p></article></div><div class="score-panel"><div><span class="mini-label">LOCAL VALIDATION + PRELIMINARY HARDWARE FEEDBACK</span><h3>Every checked case builds.</h3><p><code>FINAL_v2</code> passed a fresh synthetic-calibration rule sweep. Its bonus circuits were checked by ideal-state simulation on Willow topology.</p></div><div class="validation-stats"><div><strong>228/228</strong><span>main pairs · N = 2–20 · local</span></div><div><strong>56/56</strong><span>bonus pairs · N = 2–15 · local</span></div><div><strong>44.27</strong><span>bonus Σ Nn/depth · local comparison</span></div></div><p class="validation-caveat">In the organizer's preliminary three-case hardware rerun, the earlier main configuration scored 1.3316 ± 0.0148 and led the reported main-track ranking. <code>FINAL_v2</code> returns identical circuits for those three cases under matched calibration inputs, but it was not directly measured in that rerun. The final judging cases and calibration may differ. The official bonus awards a point to the shallowest submission under its judging rule.</p></div></div></section>
 
     <section class="credits-section section-pad" id="credits" aria-labelledby="credits-title">
       <div class="wrap">
@@ -169,6 +171,6 @@
 
     <section class="closing-section section-pad"><div class="wrap closing-grid"><div><p class="section-kicker">TAKE IT FURTHER</p><h2>Now you can see <em>the tradeoff.</em></h2><p>Willow is a graph of possible interactions. Dicke states demand equal amplitudes and intact coherence. Good circuit design joins topology, exact math, noise, and measured evidence.</p><a href="./methodology.html" class="button button-primary">Read the full method <span aria-hidden="true">↗</span></a></div><div class="resources"><h3>Keep exploring</h3><a href="#state"><span>↗</span><span>Build a Dicke state<small>see how equal amplitudes become outcomes</small></span></a><a href="#checks"><span>↗</span><span>Flip the phase<small>discover what the X-basis check reveals</small></span></a><a href="./methodology.html"><span>↗</span><span>What we built<small>the math, circuits, routing and tests</small></span></a><a href="https://quantumai.google/cirq/google/devices" target="_blank" rel="noopener"><span>↗</span><span>Google's device guide<small>read about the Willow layout</small></span></a></div></div></section>
   </main>
-  <footer><div class="wrap footer-grid"><a class="brand" href="#top"><span class="brand-mark" aria-hidden="true">✳</span><span>WILLOW<span class="brand-light">/</span>DICKE<span class="brand-light">LAB</span></span></a><p>Team Popeyes · Duke Quantum Hackathon · Google Quantum AI challenge · Major League Hacking (MLH). Routing risk values are illustrative; reported results are simulated.</p><a href="#top">Back to top ↑</a></div></footer>
+  <footer><div class="wrap footer-grid"><a class="brand" href="#top"><span class="brand-mark" aria-hidden="true">✳</span><span>WILLOW<span class="brand-light">/</span>DICKE<span class="brand-light">LAB</span></span></a><p>Team Popeyes · Duke Quantum Hackathon · Google Quantum AI challenge · Major League Hacking (MLH). Routing risk values are illustrative; local and preliminary hardware results are labeled separately.</p><a href="#top">Back to top ↑</a></div></footer>
 </body>
 </html>

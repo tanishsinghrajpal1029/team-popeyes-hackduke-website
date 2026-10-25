@@ -1,6 +1,6 @@
 # Willow Dicke Lab
 
-An interactive Team Popeyes explainer for the Google Quantum AI challenge at DuQuantum, the Duke Quantum Hackathon. It introduces Dicke states, shows the `willow_pink` connectivity graph, compares two routing rules, explains the combined circuit selector, and previews our Arduino UNO Q exhibit. The [What we built](./methodology.html) page is a fuller account of the math, decisions, local evidence, and limitations.
+An interactive Team Popeyes explainer for the Google Quantum AI challenge at DuQuantum, the Duke Quantum Hackathon. It introduces Dicke states, shows the `willow_pink` connectivity graph, compares two routing rules, explains the `DuQuantum_submission_FINAL_v2.ipynb` circuit selector, and previews our Arduino UNO Q exhibit. The [What we built](./methodology.html) page is a fuller account of the math, decisions, local evidence, and limitations.
 
 ## See the site
 
@@ -32,14 +32,17 @@ The physical UNO Q app is in the [team repository](https://github.com/tanishsing
 
 ## Circuit methodology shown on the site
 
-The combined submission prepares Dicke states with two circuit construction families. For the main task, it tries the measured crossover family first at `(7, 3)` and `(9, 4)` and the portfolio default for other `(N, n)` pairs. It validates native gates, working qubits and couplers, and the 1,750-moment limit, then tries the other family if the first candidate fails. The choice reflects **local simulation**, so real-hardware outcomes can change with calibration and hidden scoring parameters.
+The site now follows the main-task selector in [`FINAL_v2`](./downloads/DuQuantum_submission_FINAL_v2.ipynb). Product states and `N ≤ 3` use the hub-walk family. Five shapes, `(7,3)`, `(7,4)`, `(8,3)`, `(8,4)`, and `(8,5)`, try a PSC template, then the synthesized builder, then hub-walk. Other entangled `4 ≤ N ≤ 8` cases try the synthesized builder, then hub-walk. Entangled `N ≥ 9` cases try the calibration-aware two-row construction, then hub-walk. Returned circuits are checked for native gates, working qubits and couplers, and the 1,750-moment limit.
 
-For each of the 56 graded bonus pairs, the notebook builds both exact candidates and returns the valid circuit with fewer moments. `bonus-depths.json` contains those checked depths. The displayed sum of `Nn/depth` is a comparison metric, **not** the official bonus award. The main-task `228/228` rule sweep used fresh synthetic calibration, not a measured Willow score.
+The earlier main configuration that uses the same circuits for the organizer's three reported `N ≥ 9` cases scored `1.3316 ± 0.0148` in a preliminary hardware rerun, leading the reported main-track ranking. `FINAL_v2` itself was not directly scored in that rerun. Small-state PSC choices were based on local work, and final results can change with calibration and hidden choices.
+
+For each of the 56 graded bonus pairs, `FINAL_v2` uses the same bonus implementation as the earlier combined notebook: it builds both exact candidates and returns the valid circuit with fewer moments. `bonus-depths.json` contains those checked depths. The displayed sum of `Nn/depth` is a comparison metric, **not** the official bonus award. The main-task `228/228` rule sweep used fresh synthetic calibration, not measured Willow performance.
 
 ## Data and credits
 
 - `topology.json`: 105-qubit, 182-coupler `willow_pink` connectivity.
 - `bonus-depths.json`: checked exact-circuit depths for bonus pairs.
+- `downloads/DuQuantum_submission_FINAL_v2.ipynb`: byte-identical copy of the notebook described on the site (SHA-256 `993ec3e95606a8d9a1ec0ebf3fda1ec9f32a066007ef630adc47be3ec20d6727`).
 - `app.js`: Dicke-state, routing, selector, and UNO Q preview interactions.
 - `methodology.html`, `methodology.css`, and `methodology.js`: the research narrative, equations, and a small Dicke-state math explorer.
 - `assets/`: event and organization logos credited on the site.

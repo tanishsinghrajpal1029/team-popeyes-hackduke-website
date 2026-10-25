@@ -78,24 +78,28 @@ function renderDecision() {
   slider.max = N;
   if (+slider.value > N) slider.value = N;
   const n = +slider.value, k = Math.min(n, N - n);
-  const crossover = (N === 7 && n === 3) || (N === 9 && n === 4);
+  const pscCase = (N === 7 && k === 3) || (N === 8 && (k === 3 || k === 4));
   $('#decision-n-label').textContent = N;
   $('#decision-k-label').textContent = n;
   $('#decision-case').textContent = `D${toSuper(N)}${toSub(n)}`;
-  let name, description, icon, reason;
-  if (crossover) {
-    [name, description, icon, reason] = ['Measured crossover', 'This pair tries the alternative team construction first because it scored better in the local comparison.', '✦', 'The portfolio default is the validity fallback'];
-  } else if (k === 0) {
-    [name, description, icon, reason] = ['Product state', 'The portfolio prepares an all-zero or all-one state without entangling gates.', '○', 'The alternative team construction remains a validity fallback'];
+  let name, description, icon, reason, strategy;
+  if (k === 0) {
+    [name, description, icon, reason, strategy] = ['Product state', 'The main builder prepares all zeros or all ones on calibrated qubits, without CZ gates.', '○', 'Builder: hub-walk family', 'small'];
+  } else if (N <= 3) {
+    [name, description, icon, reason, strategy] = ['Small-state builder', 'The hub-walk family handles these small exact Dicke states directly.', '✳', 'Builder: hub-walk family', 'small'];
+  } else if (pscCase) {
+    [name, description, icon, reason, strategy] = ['PSC exact template', 'An offline-synthesized template is placed on usable couplers. If it fails, the selector tries the synthesized construction and then hub-walk.', '✦', 'Order: PSC → synthesized → hub-walk', 'psc'];
+  } else if (N <= 8) {
+    [name, description, icon, reason, strategy] = ['Synthesized construction', 'An exact small-state construction is tried first, with hub-walk as the validity fallback.', '◇', 'Order: synthesized → hub-walk', 'synth'];
   } else {
-    [name, description, icon, reason] = ['Portfolio default', 'The default team construction chooses a circuit and placement using the supplied calibration.', '✳', 'The alternative team construction remains a validity fallback'];
+    [name, description, icon, reason, strategy] = ['Two-row construction', 'A calibration-aware two-row circuit is tried first. The hub-walk builder is the validity fallback.', '▤', 'Order: two-row → hub-walk', 'two-row'];
   }
   $('#strategy-name').textContent = name;
   $('#strategy-description').textContent = description;
   $('#strategy-symbol').textContent = icon;
   $('#strategy-detail').textContent = `N = ${N} · n = ${n} · k = min(n, N−n) = ${k}`;
   $('#strategy-reason').textContent = reason;
-  $$('#strategy-menu > div').forEach(el => el.classList.toggle('active', el.dataset.strategy === (crossover ? 'crossover' : 'default')));
+  $$('#strategy-menu > div').forEach(el => el.classList.toggle('active', el.dataset.strategy === strategy));
   renderBonusDepth(N, n);
 }
 function renderBonusDepth(N, n) {
