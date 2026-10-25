@@ -71,32 +71,62 @@ $$('.phase-option').forEach(button => button.addEventListener('click', () => {
   $('#interference-indicator').style.right = phase === 'plus' ? '0' : 'calc(100% - 30px)';
 }));
 
+let bonusDepths = new Map();
 function renderDecision() {
   const N = +$('#decision-n').value;
   const slider = $('#decision-k');
   slider.max = N;
   if (+slider.value > N) slider.value = N;
   const n = +slider.value, k = Math.min(n, N - n);
+  const crossover = (N === 7 && n === 3) || (N === 9 && n === 4);
   $('#decision-n-label').textContent = N;
   $('#decision-k-label').textContent = n;
   $('#decision-case').textContent = `D${toSuper(N)}${toSub(n)}`;
-  const catalog = {
-    product: ['Product state', 'No entangling circuit is needed: all zeros or all ones already form the target.', '✧', 'Why: zero CZ gates'],
-    tree: ['Broadcast tree', 'Start with one excitation, then split its amplitude across branches in parallel.', '✳', 'Why: 2N − 3 CZ gates with much less depth than a chain'],
-    synth: ['Exact small-state synthesis', 'Use an exact, precomputed Ry + CZ circuit and place its shape on good physical qubits.', '◇', 'Why: dense small states can be much cheaper than a routed generic circuit'],
-    portfolio: ['Optimized portfolio circuit', 'A calibrated portfolio of path, ladder, and two-arm constructions is evaluated for this region.', '⤴', 'Why: this family performed better under the team’s evaluation harness'],
-    scs: ['Path-based SCS blocks', 'Use exact synthesized blocks on neighbouring qubits along a path.', '╱', 'Why: no generic SWAP routing is needed'],
-    routed: ['Routed B–E fallback', 'Use the general Bärtschi–Eidenbenz construction and route it over a selected path.', '↝', 'Why: it extends coverage when specialized candidates are unavailable']
-  };
-  const key = k === 0 ? 'product' : k === 1 ? 'tree' : (k === 2 && N >= 6) || (k >= 3 && N >= 9) ? 'portfolio' : N <= 8 ? 'synth' : k <= 5 ? 'scs' : 'routed';
-  const [name, description, icon, reason] = catalog[key];
+  let name, description, icon, reason;
+  if (crossover) {
+    [name, description, icon, reason] = ['Measured crossover', 'This pair tries the alternative team construction first because it scored better in the local comparison.', '✦', 'The portfolio default is the validity fallback'];
+  } else if (k === 0) {
+    [name, description, icon, reason] = ['Product state', 'The portfolio prepares an all-zero or all-one state without entangling gates.', '○', 'The alternative team construction remains a validity fallback'];
+  } else {
+    [name, description, icon, reason] = ['Portfolio default', 'The default team construction chooses a circuit and placement using the supplied calibration.', '✳', 'The alternative team construction remains a validity fallback'];
+  }
   $('#strategy-name').textContent = name;
   $('#strategy-description').textContent = description;
   $('#strategy-symbol').textContent = icon;
-  $('#strategy-detail').textContent = `k = min(${n}, ${N - n}) = ${k}${n > N / 2 ? ' · complement + flip' : ''}`;
+  $('#strategy-detail').textContent = `N = ${N} · n = ${n} · k = min(n, N−n) = ${k}`;
   $('#strategy-reason').textContent = reason;
-  $$('#strategy-menu > div').forEach(el => el.classList.toggle('active', el.dataset.strategy === key));
+  $$('#strategy-menu > div').forEach(el => el.classList.toggle('active', el.dataset.strategy === (crossover ? 'crossover' : 'default')));
+  renderBonusDepth(N, n);
 }
+function renderBonusDepth(N, n) {
+  const row = bonusDepths.get(`${N},${n}`);
+  if (!row) {
+    $('#bonus-eligibility').textContent = N > 15 || n < 1 || n > Math.floor(N / 2)
+      ? 'Bonus range: 2 ≤ N ≤ 15 and 1 ≤ n ≤ ⌊N/2⌋. Choose a pair in that range.'
+      : 'Loading checked bonus depths…';
+    for (const id of ['bonus-a-depth', 'bonus-b-depth', 'bonus-selected-depth']) $(`#${id}`).textContent = '—';
+    for (const id of ['bonus-a-bar', 'bonus-b-bar']) $(`#${id}`).style.width = '0%';
+    return;
+  }
+  $('#bonus-eligibility').textContent = `D${toSuper(N)}${toSub(n)}: both circuits passed the exact-state check.`;
+  const max = Math.max(row.candidate_a, row.candidate_b);
+  $('#bonus-a-depth').textContent = row.candidate_a;
+  $('#bonus-b-depth').textContent = row.candidate_b;
+  $('#bonus-selected-depth').textContent = row.selected;
+  $('#bonus-a-bar').style.width = `${100 * row.candidate_a / max}%`;
+  $('#bonus-b-bar').style.width = `${100 * row.candidate_b / max}%`;
+  $('#bonus-a-bar').classList.toggle('chosen', row.candidate_a === row.selected);
+  $('#bonus-b-bar').classList.toggle('chosen', row.candidate_b === row.selected);
+}
+fetch('./bonus-depths.json').then(response => {
+  if (!response.ok) throw new Error(`HTTP ${response.status}`);
+  return response.json();
+}).then(data => {
+  bonusDepths = new Map(data.cases.map(row => [`${row.N},${row.n}`, row]));
+  renderDecision();
+}).catch(() => {
+  $('#bonus-eligibility').textContent = 'Depth data could not load. Refresh the page to try again.';
+});
 $('#decision-n').addEventListener('input', renderDecision);
 $('#decision-k').addEventListener('input', renderDecision);
 

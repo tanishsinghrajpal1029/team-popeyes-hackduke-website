@@ -28,3 +28,25 @@
 .credit-card>span:last-child{color:var(--lime);font:11px var(--mono);margin-top:auto}
 .credits-note{color:#91aaa9;font:11px/1.6 var(--mono);margin:22px 0 0}
 @media(max-width:800px){.credits-grid{grid-template-columns:1fr}.credit-logo{height:100px}.credits-section h2{font-size:40px}}
+
+/* Combined submission: the bonus lookup uses checked circuit depths. */
+.bonus-lab{margin-top:32px;background:#172e35;border:1px solid #42605a;padding:30px;display:grid;grid-template-columns:1fr 1fr;gap:44px;align-items:center}
+.bonus-lab .mini-label{color:var(--lime)}
+.bonus-lab h3{font-size:28px;margin:12px 0}
+.bonus-lab p{color:#b8cdc5;font-size:13px;line-height:1.65;max-width:550px}
+.bonus-lab .bonus-eligibility{color:var(--lime);font:11px/1.6 var(--mono);margin-top:20px}
+.bonus-depth-visual{background:#0c2027;border:1px solid #31505a;border-radius:15px;padding:22px}
+.bonus-depth-row{display:grid;grid-template-columns:94px 1fr 40px;gap:10px;align-items:center;margin:12px 0;font:11px var(--mono)}
+.bonus-depth-row strong{text-align:right;font-size:15px}
+.bonus-track{height:20px;background:#284047;border-radius:5px;overflow:hidden}
+.bonus-track i{display:block;height:100%;background:#587c80;transition:width .3s ease}
+.bonus-track i.chosen{background:var(--lime)}
+.bonus-selected{display:flex;align-items:baseline;gap:7px;margin-top:21px;padding-top:17px;border-top:1px solid #31505a;color:#c4ddd1;font:11px var(--mono)}
+.bonus-selected strong{margin-left:auto;font-size:27px;color:var(--lime)}
+.validation-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;align-self:center}
+.validation-stats>div{background:#b4e56a;border-radius:12px;padding:17px 12px;min-height:90px}
+.validation-stats strong{display:block;font:600 clamp(20px,2vw,31px) var(--mono);letter-spacing:-.06em}
+.validation-stats span{display:block;color:#3d604e;font:10px/1.4 var(--mono);margin-top:8px}
+.score-panel .validation-caveat{grid-column:1/-1;max-width:none;margin:0;padding-top:13px;border-top:1px solid #9ece62}
+@media(max-width:800px){.bonus-lab{grid-template-columns:1fr;gap:16px}.validation-stats strong{font-size:24px}}
+@media(max-width:600px){.bonus-lab{padding:20px}.validation-stats{grid-template-columns:1fr}.validation-stats>div{min-height:0}.bonus-depth-row{grid-template-columns:78px 1fr 30px;font-size:9px}}
