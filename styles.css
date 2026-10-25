@@ -12,3 +12,19 @@
 @media(max-width:700px){.route-controls{display:block;padding:24px}.route-controls .route-comparison{display:grid}.route-result strong{font-size:22px}}
 @media(max-width:600px){.hero-art{height:320px}.hero-note{font-size:9px}.hero-bottom span:first-child{max-width:160px}.state-controls,.state-display{padding:23px}.state-stats{gap:6px}.state-stats div{padding:10px}.state-stats small{font-size:8px}.state-stats strong{font-size:17px}.state-equation{font-size:16px}.route-lab .lab-topline{align-items:start;flex-direction:column}.map-column{padding:13px}.map-toolbar{display:grid;grid-template-columns:repeat(3,1fr)}.map-mode{font-size:9px;padding:8px 2px}.map-wrap{height:420px}.route-controls{display:block;padding:21px}.route-controls .route-comparison{display:grid}.coherence-card{padding:20px}.coherence-controls{display:block}.phase-switch{margin-top:22px;width:max-content}.coherence-views{grid-template-columns:1fr}.strategy-menu{grid-template-columns:1fr 1fr}.strategy-menu>div{padding:10px}.strategy-menu b{font-size:12px}.strategy-menu small{font-size:10px}.selected-strategy{min-height:0;padding:24px}.selected-strategy h3{font-size:30px}.score-panel{padding:23px}.score-bar-row{grid-template-columns:108px 1fr 42px;font-size:9px}.score-bar-row b{font-size:11px}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*:before,*:after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+
+/* Event and organization credits */
+.credits-section{background:#0c1b24;border-top:1px solid #25434a}
+.credits-section h2{font-size:clamp(38px,4vw,58px);margin:14px 0 18px;max-width:730px}
+.credits-intro{color:#b7cbc8;font-size:16px;line-height:1.65;max-width:780px;margin:0 0 32px}
+.credits-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.credit-card{display:flex;flex-direction:column;gap:12px;padding:18px;background:#112832;border:1px solid #35535b;border-radius:16px;transition:transform .2s,border-color .2s}
+.credit-card:hover{transform:translateY(-4px);border-color:var(--lime)}
+.credit-card:focus-visible{outline:2px solid var(--lime);outline-offset:4px}
+.credit-logo{height:110px;display:flex;align-items:center;justify-content:center;padding:16px 20px;background:#fff;border-radius:10px}
+.credit-logo-duquantum{background:#1b1330}
+.credit-logo img{display:block;width:100%;height:100%;max-width:270px;object-fit:contain}
+.credit-card strong{font-size:15px;line-height:1.35}
+.credit-card>span:last-child{color:var(--lime);font:11px var(--mono);margin-top:auto}
+.credits-note{color:#91aaa9;font:11px/1.6 var(--mono);margin:22px 0 0}
+@media(max-width:800px){.credits-grid{grid-template-columns:1fr}.credit-logo{height:100px}.credits-section h2{font-size:40px}}
