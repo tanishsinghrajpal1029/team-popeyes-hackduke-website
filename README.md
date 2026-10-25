@@ -1,6 +1,6 @@
 # Willow Dicke Lab
 
-An interactive Team Popeyes explainer for the Google Quantum AI challenge at DuQuantum, the Duke Quantum Hackathon. It introduces Dicke states, shows the `willow_pink` connectivity graph, compares two routing rules, explains the combined circuit selector, and previews our Arduino UNO Q exhibit.
+An interactive Team Popeyes explainer for the Google Quantum AI challenge at DuQuantum, the Duke Quantum Hackathon. It introduces Dicke states, shows the `willow_pink` connectivity graph, compares two routing rules, explains the combined circuit selector, and previews our Arduino UNO Q exhibit. The [What we built](./methodology.html) page is a fuller account of the math, decisions, local evidence, and limitations.
 
 ## See the site
 
@@ -12,7 +12,7 @@ For a local preview, run from this directory:
 python3 -m http.server 8000
 ```
 
-Open `http://127.0.0.1:8000/`. Serve it over HTTP so the page can load `topology.json` and `bonus-depths.json`; opening `index.html` directly as a file may block those requests.
+Open `http://127.0.0.1:8000/` for the interactive lab or `http://127.0.0.1:8000/methodology.html` for the field notes. Serve it over HTTP so the page can load `topology.json` and `bonus-depths.json`; opening `index.html` directly as a file may block those requests.
 
 ## How the alternative path is found
 
@@ -41,6 +41,7 @@ For each of the 56 graded bonus pairs, the notebook builds both exact candidates
 - `topology.json`: 105-qubit, 182-coupler `willow_pink` connectivity.
 - `bonus-depths.json`: checked exact-circuit depths for bonus pairs.
 - `app.js`: Dicke-state, routing, selector, and UNO Q preview interactions.
+- `methodology.html`, `methodology.css`, and `methodology.js`: the research narrative, equations, and a small Dicke-state math explorer.
 - `assets/`: event and organization logos credited on the site.
 
 This is an independent Team Popeyes explainer. [DuQuantum](https://duquantum.org/), [Google Quantum AI](https://quantumai.google/), and [Major League Hacking](https://mlh.io/) are linked and credited on the page. Google Fonts are optional; system fonts are used if they do not load.
